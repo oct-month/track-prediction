@@ -1,0 +1,14 @@
+[[source]]
+url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
+verify_ssl = true
+name = "custom"
+
+[packages]
+matplotlib = "*"
+
+[dev-packages]
+mypy = "*"
+autopep8 = "*"
+
+[requires]
+python_version = "3.8"
