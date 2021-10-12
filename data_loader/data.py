@@ -1,28 +1,30 @@
 from datetime import datetime
+from typing import Tuple, Union, List
 
-from rule import DataRule
+from data_loader.config import HEIGHT_MAX, HEIGHT_MIN
+
+from .rule import DataRule
 
 class PlaneData:
-    def __init__(self, dt, fn, h, longi, lati, is_available=True) -> None:
-        self.datetime = datetime.fromisoformat(dt)  # 时间
+    def __init__(self, dt: Union[datetime, str], fn: str, h: float, longi: float, lati: float, is_available: bool=True) -> None:
+        if isinstance(dt, datetime):
+            self.datetime = dt
+        else:
+            self.datetime = datetime.fromisoformat(dt)  # 时间
         self.flight_number = fn                     # 航班号
         self.height = h                             # 几何高度
         self.longitude = longi                      # 经度
         self.latitude = lati                        # 纬度
-        self.is_available = is_available    # 数据是否有效
+        self.is_available = is_available    # 数据是否有效（航班号、高度、经纬度缺失的数据无效）
 
     @classmethod
     def from_str(cls, dt: str) -> 'PlaneData':
-        flag = True
         cs = dt.split('\t')
-        # for i in DataRule.iters:
-        #     if cs[i].strip() == '':
-        #         flag = False
         longi, lati = (cs[DataRule.longitude_latitude].strip() or '0,0').split(',')
         pd = cls(
             cs[DataRule.datetime].strip() or '2000-01-01 00:00:00.000000',
             cs[DataRule.flight_number].strip(),
-            float(cs[DataRule.height].strip() or cs[DataRule.heigth_2].strip() or '0'),
+            float(cs[DataRule.height].strip() or '0'),
             float(longi),
             float(lati)
         )
@@ -37,3 +39,18 @@ class PlaneData:
         result[DataRule.longitude_latitude] = f'{self.longitude},{self.latitude}'
         result[DataRule.height] = str(self.height)
         return '\t'.join(result)
+
+    def to_list(self) -> List[float]:
+        # 归一化
+        return [(self.longitude + 180) / 360, (self.latitude + 90) / 180, (self.height - HEIGHT_MIN) / HEIGHT_MAX]
+        # return [self.longitude, self.latitude, self.height]
+    
+    @classmethod
+    def from_list(cls, dt: List[float]) -> Tuple[float, float, float]:
+        longitude = dt[0] * 360 - 180
+        latitude = dt[1] * 180 - 90
+        height = dt[2] * HEIGHT_MAX + HEIGHT_MIN
+        return longitude, latitude, height
+
+    # def to_tensor(self) -> torch.Tensor:
+    #     return torch.tensor(self.to_list())

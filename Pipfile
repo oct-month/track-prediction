@@ -5,6 +5,9 @@ name = "custom"
 
 [packages]
 matplotlib = "*"
+torch = "1.8.2+cu102"
+torchvision = "0.9.2+cu102"
+torchaudio = "0.8.2"
 
 [dev-packages]
 mypy = "*"
