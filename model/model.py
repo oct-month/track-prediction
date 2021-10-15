@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 import torch
-from torch import nn, optim
+from torch import nn
 
 class PlaneLSTMModule(nn.Module):
     def __init__(self, hidden_size: int, feature_size: int):
@@ -8,7 +8,10 @@ class PlaneLSTMModule(nn.Module):
         self.lstm = nn.LSTM(input_size=feature_size, hidden_size=hidden_size)
         self.hidden_size = self.lstm.hidden_size * (2 if self.lstm.bidirectional else 1)
         self.feature_size = feature_size
-        self.dense = nn.Linear(in_features=self.hidden_size, out_features=feature_size, bias=True)
+        self.dense = nn.Sequential(
+            nn.Dropout(p=0.8),
+            nn.Linear(in_features=self.hidden_size, out_features=feature_size, bias=True)
+            )
 
     def forward(self, X: torch.Tensor, state: Optional[Tuple[torch.Tensor, torch.Tensor]]):
         Y, state = self.lstm(X, state)

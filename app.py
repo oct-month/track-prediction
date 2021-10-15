@@ -1,37 +1,32 @@
-from typing import Iterator
 import torch
 from torch import nn, optim
 from time import time
 
-from model import PlaneLSTMModule, loss
-from data_loader import data_iter
+from model import device, PlaneLSTMModule, loss, grad_clipping, predict, draw_2d, draw_3d
+from data_loader import data_track_iter, data_iter, NUM_FEATURES
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def grad_clipping(params: Iterator[nn.Parameter], theta: float) -> None:
-    '''梯度和裁剪为theta'''
-    norm = torch.tensor(0.0, device=device)
-    for param in params:
-        norm += (param.grad.data ** 2).sum()
-    norm = norm.sqrt()
-    if norm.item() > theta:
-        for param in params:
-            param.grad.data *= theta / norm.item()
-
+PARAMS_PATH = './params.pt'
 
 if __name__ == '__main__':
     num_hiddens = 144
-    num_features = 3
-    lr = 0.1
-    # clipping_theta = 1e2
-    num_epochs = 10
-    batch_size = 256
-    num_steps = 100
+    lr = 1
+    clipping_theta = 1e-2
+    num_epochs = 128
+    batch_size = 32
+    num_steps = 64
 
-    model = PlaneLSTMModule(num_hiddens, num_features).to(device)
+    model = PlaneLSTMModule(num_hiddens, NUM_FEATURES).to(device)
+    # if os.path.isfile(PARAMS_PATH):
+    #      model.load_state_dict(torch.load(PARAMS_PATH))
+    # else:
+    #     for param in model.parameters():
+    #         nn.init.normal_(param)
+    for param in model.parameters():
+        nn.init.normal_(param)
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
-    for epoch in range(num_epochs + 1):
+    for epoch in range(1, num_epochs + 1):
         l_sum, n, start = 0.0, 0, time()
         state = None
         for X, Y in data_iter(batch_size, num_steps):
@@ -41,14 +36,24 @@ if __name__ == '__main__':
                     s.detach_()
             outputs, state = model(X, state)
             y = Y.reshape(-1, Y.shape[-1])
-            # y = torch.transpose(Y, 0, 1).contiguous().view(-1, 3)
             l = loss(outputs, y)
 
             optimizer.zero_grad()
-            l.backward()
-            # grad_clipping(model.parameters(), clipping_theta)
+            l.sum().backward()
+            if epoch > 8:
+                grad_clipping(model.parameters(), clipping_theta)
             optimizer.step()
 
-            l_sum += l.item()
-            n += y.shape[-1]
-        print(f'epoch {epoch}, loss {l_sum / n}, time {time() - start}')
+            l_sum += l.sum().item() / NUM_FEATURES
+            n += y.shape[0]
+        print(f'epoch {epoch}, loss {l_sum / n}, time {time() - start}, n {n}.')
+
+    torch.save(model.state_dict(), PARAMS_PATH)
+
+    for track in data_track_iter():
+        track_pred = predict(model, track[:1000], len(track))
+        draw_2d(track, track_pred)
+        # print(len(track_pred))
+        # print(track[-1].to_tuple())
+        # print([t.to_tuple() for t in track_pred[-120:]])
+        break

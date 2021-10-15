@@ -1,20 +1,40 @@
 from datetime import datetime
-from typing import Tuple, Union, List
+from typing import Tuple, Union
 
-from data_loader.config import HEIGHT_MAX, HEIGHT_MIN
+from .config import HEIGHT_MAX, HEIGHT_MIN
 
 from .rule import DataRule
 
-class PlaneData:
+
+class PlaneDataSimple:
+    def __init__(self, longi: float, lati: float, h: float) -> None:
+        self.height = h             # 几何高度
+        self.longitude = longi      # 经度
+        self.latitude = lati        # 纬度
+    
+    @classmethod
+    def from_tuple(cls, dt: Tuple[float, float, float]) -> 'PlaneDataSimple':
+        longitude = dt[0] * 360 / HEIGHT_MAX - 180
+        latitude = dt[1] * 180 / HEIGHT_MAX - 90
+        height = dt[2] + HEIGHT_MIN
+        return cls(longitude, latitude, height)
+    
+    def to_tuple(self) -> Tuple[float, float, float]:
+        # 归一化
+        return (self.longitude + 180) * HEIGHT_MAX / 360, (self.latitude + 90) * HEIGHT_MAX / 180, (self.height - HEIGHT_MIN)
+
+    def __str__(self) -> str:
+        return str(self.to_tuple())
+
+
+class PlaneData(PlaneDataSimple):
     def __init__(self, dt: Union[datetime, str], fn: str, h: float, longi: float, lati: float, is_available: bool=True) -> None:
+        super().__init__(longi, lati, h)
         if isinstance(dt, datetime):
             self.datetime = dt
         else:
             self.datetime = datetime.fromisoformat(dt)  # 时间
         self.flight_number = fn                     # 航班号
-        self.height = h                             # 几何高度
-        self.longitude = longi                      # 经度
-        self.latitude = lati                        # 纬度
         self.is_available = is_available    # 数据是否有效（航班号、高度、经纬度缺失的数据无效）
 
     @classmethod
@@ -39,18 +59,3 @@ class PlaneData:
         result[DataRule.longitude_latitude] = f'{self.longitude},{self.latitude}'
         result[DataRule.height] = str(self.height)
         return '\t'.join(result)
-
-    def to_list(self) -> List[float]:
-        # 归一化
-        return [(self.longitude + 180) / 360, (self.latitude + 90) / 180, (self.height - HEIGHT_MIN) / HEIGHT_MAX]
-        # return [self.longitude, self.latitude, self.height]
-    
-    @classmethod
-    def from_list(cls, dt: List[float]) -> Tuple[float, float, float]:
-        longitude = dt[0] * 360 - 180
-        latitude = dt[1] * 180 - 90
-        height = dt[2] * HEIGHT_MAX + HEIGHT_MIN
-        return longitude, latitude, height
-
-    # def to_tensor(self) -> torch.Tensor:
-    #     return torch.tensor(self.to_list())

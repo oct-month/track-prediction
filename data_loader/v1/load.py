@@ -117,10 +117,9 @@ def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[torch.Tensor, 
         steps = (batch_len - 1) // num_steps
         matrix = []
         for i in range(batch_size):
-            matrix.append([t.to_list() for t in track[i * batch_len : (i + 1) * batch_len]])
+            matrix.append([t.to_tuple() for t in track[i * batch_len : (i + 1) * batch_len]])
         dts = torch.tensor(matrix)
         for i in range(steps):
             X = dts[:, i * num_steps : (i + 1) * num_steps]
             Y = dts[:, i * num_steps + 1 : (i + 1) * num_steps + 1]
             yield X, Y
-
