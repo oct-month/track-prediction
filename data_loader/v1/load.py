@@ -74,7 +74,6 @@ def find_pf_pr(track: List[PlaneData], t: datetime) -> Tuple[int, int]:
     return end - 1, end
 
 
-
 def sampling_track(track: List[PlaneData], microseconds: int) -> List[PlaneData]:
     '''每隔microseconds微秒取一个航迹点'''
     start = track[0].datetime
@@ -88,10 +87,7 @@ def sampling_track(track: List[PlaneData], microseconds: int) -> List[PlaneData]
         if pf == pr:
             result.append(track[pf])
         else:
-            try:
-                result.append(generate_track_point(track[pf], track[pr], start))
-            except Exception:
-                sampling_track(track, microseconds)
+            result.append(generate_track_point(track[pf], track[pr], start))
     return result
 
 
@@ -110,8 +106,8 @@ def data_track_iter() -> Generator[List[PlaneData], None, None]:
             #     print('丢弃', track_2[0].flight_number, len(track))
 
 
-def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[torch.Tensor, torch.Tensor], None, None]:
-    for track in data_track_iter():
+def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[int, torch.Tensor, torch.Tensor], None, None]:
+    for idx, track in enumerate(data_track_iter()):
         track_len = len(track)
         batch_len = track_len // batch_size
         steps = (batch_len - 1) // num_steps
@@ -122,4 +118,4 @@ def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[torch.Tensor, 
         for i in range(steps):
             X = dts[:, i * num_steps : (i + 1) * num_steps]
             Y = dts[:, i * num_steps + 1 : (i + 1) * num_steps + 1]
-            yield X, Y
+            yield idx, X, Y

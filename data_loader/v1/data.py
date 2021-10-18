@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Tuple, Union
 
-from .config import HEIGHT_MAX, HEIGHT_MIN
+from .config import HEIGHT_MAX, HEIGHT_MIN, TIMESTAMP_MIN
 
 from .rule import DataRule
 
@@ -24,7 +24,7 @@ class PlaneDataSimple:
         return (self.longitude + 180) * HEIGHT_MAX / 360, (self.latitude + 90) * HEIGHT_MAX / 180, (self.height - HEIGHT_MIN)
 
     def __str__(self) -> str:
-        return str(self.to_tuple())
+        return str([self.longitude, self.latitude, self.height])
 
 
 class PlaneData(PlaneDataSimple):
@@ -42,13 +42,13 @@ class PlaneData(PlaneDataSimple):
         cs = dt.split('\t')
         longi, lati = (cs[DataRule.longitude_latitude].strip() or '0,0').split(',')
         pd = cls(
-            cs[DataRule.datetime].strip() or '2000-01-01 00:00:00.000000',
+            cs[DataRule.datetime].strip() or datetime.fromtimestamp(TIMESTAMP_MIN),
             cs[DataRule.flight_number].strip(),
             float(cs[DataRule.height].strip() or '0'),
             float(longi),
             float(lati)
         )
-        if pd.flight_number == '' or pd.height == 0 or (pd.longitude == 0 and pd.latitude == 0):
+        if pd.datetime == datetime.fromtimestamp(TIMESTAMP_MIN) or pd.flight_number == '' or pd.height == 0 or (pd.longitude == 0 and pd.latitude == 0):
             pd.is_available = False
         return pd
 
