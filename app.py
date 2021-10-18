@@ -17,7 +17,7 @@ if __name__ == '__main__':
             nn.init.normal_(param)
     # for param in model.parameters():
     #     nn.init.normal_(param)
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.SGD(model.parameters(), lr=lr)
 
     loss_list = []
     for epoch in range(1, num_epochs + 1):
