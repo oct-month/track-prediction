@@ -19,7 +19,7 @@ if __name__ == '__main__':
     for i, track in enumerate(data_track_iter()):
         if i == steps:
             track_pred = predict(model, track[:1000], len(track) - 1000)
-            draw_2d(track[:1000], track_pred)
+            draw_2d(track[:1000], track_pred, [100, 50, 1])
             print(len(track_pred))
             # print(track[-1].to_tuple())
             # print([t.to_tuple() for t in track_pred[-120:]])
