@@ -1,36 +1,33 @@
+import os
 import torch
 from torch import nn, optim
 from time import time
 
 from model import device, PlaneLSTMModule, loss, grad_clipping, predict, draw_2d, draw_3d
 from data_loader import data_track_iter, data_iter, NUM_FEATURES
+from config import PARAMS_PATH, num_hiddens, lr, clipping_theta, num_epochs, batch_size, num_steps
 
-
-PARAMS_PATH = './params.pt'
 
 if __name__ == '__main__':
-    num_hiddens = 144
-    lr = 1
-    clipping_theta = 1e-2
-    num_epochs = 128
-    batch_size = 32
-    num_steps = 64
-
     model = PlaneLSTMModule(num_hiddens, NUM_FEATURES).to(device)
-    # if os.path.isfile(PARAMS_PATH):
-    #      model.load_state_dict(torch.load(PARAMS_PATH))
-    # else:
-    #     for param in model.parameters():
-    #         nn.init.normal_(param)
-    for param in model.parameters():
-        nn.init.normal_(param)
+    if os.path.isfile(PARAMS_PATH):
+         model.load_state_dict(torch.load(PARAMS_PATH))
+    else:
+        for param in model.parameters():
+            nn.init.normal_(param)
+    # for param in model.parameters():
+    #     nn.init.normal_(param)
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
     for epoch in range(1, num_epochs + 1):
         l_sum, n, start = 0.0, 0, time()
         state = None
-        for X, Y in data_iter(batch_size, num_steps):
+        idx_pre = 0
+        for idx, X, Y in data_iter(batch_size, num_steps):
             X, Y = X.to(device), Y.to(device)
+            if idx_pre != idx:
+                idx_pre = idx
+                state = None
             if state is not None:
                 for s in state:
                     s.detach_()
@@ -40,8 +37,8 @@ if __name__ == '__main__':
 
             optimizer.zero_grad()
             l.sum().backward()
-            if epoch > 8:
-                grad_clipping(model.parameters(), clipping_theta)
+            # if epoch > 8:
+            #     grad_clipping(model.parameters(), clipping_theta)
             optimizer.step()
 
             l_sum += l.sum().item() / NUM_FEATURES
@@ -51,9 +48,10 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), PARAMS_PATH)
 
     for track in data_track_iter():
-        track_pred = predict(model, track[:1000], len(track))
-        draw_2d(track, track_pred)
+        track_pred = predict(model, track[:1000], len(track) - 1000)
+        draw_2d(track, track_pred[:5] + track_pred[-5:])
         # print(len(track_pred))
         # print(track[-1].to_tuple())
         # print([t.to_tuple() for t in track_pred[-120:]])
         break
+

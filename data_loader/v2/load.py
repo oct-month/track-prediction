@@ -47,8 +47,8 @@ def data_track_iter() -> Generator[List[PlaneData], None, None]:
                 yield track
 
 
-def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[torch.Tensor, torch.Tensor], None, None]:
-    for track in data_track_iter():
+def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[int, torch.Tensor, torch.Tensor], None, None]:
+    for idx, track in enumerate(data_track_iter()):
         track_len = len(track)
         batch_len = track_len // batch_size
         steps = (batch_len - 1) // num_steps
@@ -59,4 +59,4 @@ def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[torch.Tensor, 
         for i in range(steps):
             X = dts[:, i * num_steps : (i + 1) * num_steps]
             Y = dts[:, i * num_steps + 1 : (i + 1) * num_steps + 1]
-            yield X, Y
+            yield idx, X, Y

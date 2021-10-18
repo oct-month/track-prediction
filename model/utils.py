@@ -31,14 +31,14 @@ def predict(model: PlaneLSTMModule, basics: Sequence[PlaneDataSimple], num_pred:
         Y, state = model(X, state)
     t = tuple(Y.view(-1).detach().cpu().numpy().tolist())
     result.append(PlaneDataSimple.from_tuple(t))
-    for _ in range(num_pred - len(basics)):
+    for _ in range(num_pred):
         X = torch.tensor(result[-1].to_tuple(), device=device)
         X = X.view(1, 1, X.shape[-1])
         Y, state = model(X, state)
         t = tuple(Y.view(-1).detach().cpu().numpy().tolist())
         result.append(PlaneDataSimple.from_tuple(t))
     model.train()
-    return list(basics) + result
+    return result
 
 
 def draw_3d(track: Sequence[PlaneDataSimple], track_pred: Sequence[PlaneDataSimple]) -> None:
