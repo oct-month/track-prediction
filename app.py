@@ -38,8 +38,7 @@ if __name__ == '__main__':
 
             optimizer.zero_grad()
             l.sum().backward()
-            # if epoch > 8:
-            #     grad_clipping(model.parameters(), clipping_theta)
+            grad_clipping(model.parameters(), clipping_theta)
             optimizer.step()
 
             l_sum += l.sum().item() / NUM_FEATURES
