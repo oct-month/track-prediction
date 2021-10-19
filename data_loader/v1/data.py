@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Tuple, Union
 
-from .config import HEIGHT_MAX, HEIGHT_MIN, TIMESTAMP_MIN
+from .config import HEIGHT_MAX, HEIGHT_MIN, LATITUDE_MAX, LATITUDE_MIN, LONGITUDE_MAX, LONGITUDE_MIN, TIMESTAMP_MIN
 
 from .rule import DataRule
 
@@ -14,14 +14,16 @@ class PlaneDataSimple:
     
     @classmethod
     def from_tuple(cls, dt: Tuple[float, float, float]) -> 'PlaneDataSimple':
-        longitude = dt[0] * 360 / HEIGHT_MAX - 180
-        latitude = dt[1] * 180 / HEIGHT_MAX - 90
+        longitude = dt[0] * (LONGITUDE_MAX - LONGITUDE_MIN) / (HEIGHT_MAX - HEIGHT_MIN) + LONGITUDE_MIN
+        latitude = dt[1] * (LATITUDE_MAX - LATITUDE_MIN) / (HEIGHT_MAX - HEIGHT_MIN) + LATITUDE_MIN
         height = dt[2] + HEIGHT_MIN
         return cls(longitude, latitude, height)
     
     def to_tuple(self) -> Tuple[float, float, float]:
         # 归一化
-        return (self.longitude + 180) * HEIGHT_MAX / 360, (self.latitude + 90) * HEIGHT_MAX / 180, (self.height - HEIGHT_MIN)
+        return (self.longitude - LONGITUDE_MIN) * (HEIGHT_MAX - HEIGHT_MIN) / (LONGITUDE_MAX - LONGITUDE_MIN), \
+            (self.latitude - LATITUDE_MIN) * (HEIGHT_MAX - HEIGHT_MIN) / (LATITUDE_MAX - LATITUDE_MIN), \
+            (self.height - HEIGHT_MIN)
 
     def __str__(self) -> str:
         return str([self.longitude, self.latitude, self.height])

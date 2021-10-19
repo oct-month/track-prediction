@@ -1,19 +1,13 @@
 from data_loader import data_track_iter
 
 if __name__ == '__main__':
-    max_n, min_n = 0, 10000000
+    MAX_LONGI, MAX_LATI, MAX_H = .0, .0, .0
+    MIN_LOGIN, MIN_LATI, MIN_H = 1e10, 1e10, 1e10
     for track in data_track_iter():
-        n = 0  
-        f = None
-        for t in track:
-            x = t.to_tuple()
-            if f is None:
-                f = x
-            else:
-                if f == x:
-                    n += 1
-                else:
-                    max_n = max(max_n, n)
-                    min_n = min(min_n, n)
-                    n = 0
-    print(max_n, min_n)
+        for pd in track:
+            MAX_LONGI, MIN_LOGIN = max(pd.longitude, MAX_LONGI), min(pd.longitude, MIN_LOGIN)
+            MAX_LATI, MIN_LATI = max(pd.latitude, MAX_LATI), min(pd.latitude, MIN_LATI)
+            MAX_H, MIN_H = max(pd.height, MAX_H), min(pd.height, MIN_H)
+    print('longitude', [MIN_LOGIN, MAX_LONGI])
+    print('latitude', [MIN_LATI, MAX_LATI])
+    print('height', [MIN_H, MAX_H])

@@ -23,20 +23,16 @@ def grad_clipping(params: Iterator[nn.Parameter], theta: float) -> None:
 def predict(model: PlaneLSTMModule, basics: Sequence[PlaneDataSimple], num_pred: int) -> List[PlaneDataSimple]:
     '''使用model基于basics预测num_pred个航迹点'''
     model.eval()
-    result = []
     state = None
-    for pd in basics:
-        X = torch.tensor(pd.to_tuple(), device=device)
-        X = X.view(1, 1, X.shape[-1])
+    result = [basics[0]]
+    for t in range(num_pred + len(basics) - 1):
+        X = torch.tensor(result[0].to_tuple(), device=device).float().view(1, 1, NUM_FEATURES)
         Y, state = model(X, state)
-    t = tuple(Y.view(-1).detach().cpu().numpy().tolist())
-    result.append(PlaneDataSimple.from_tuple(t))
-    for _ in range(num_pred - 1):
-        X = torch.tensor(result[-1].to_tuple(), device=device)
-        X = X.view(1, 1, X.shape[-1])
-        Y, state = model(X, state)
-        t = tuple(Y.view(-1).detach().cpu().numpy().tolist())
-        result.append(PlaneDataSimple.from_tuple(t))
+        if t < len(basics) - 1:
+            result.append(basics[t + 1])
+        else:
+            tap = tuple(Y.view(-1).detach().cpu().numpy().tolist())
+            result.append(PlaneDataSimple.from_tuple(tap))
     model.train()
     return result
 
