@@ -3,23 +3,24 @@ import os
 from collections import defaultdict
 from datetime import datetime, timedelta
 import math
+import random
+import pandas
 import torch
 
 from .data import PlaneData
 from .config import DATA_DIR, TRACK_MIN_POINT_NUM, TRACK_POINT_TIME_INTERVAL, TRACK_TIME_INTERVAL_MAX
 
 
-def process_data_a_day(path: str) -> Generator[List[PlaneData], None, None]:
+FEATURES_COLUMNS = ['系统接收时间', '航班号', '几何高度', '经度', '纬度', '飞行高度', '地速', '航向']
+
+
+def process_data_a_file(path: str) -> Generator[List[PlaneData], None, None]:
     result = defaultdict(list)
     # 读取
-    with open(path, 'r', encoding='UTF-8') as f:
-        for s in f.readlines()[1:]:
-            pd = PlaneData.from_str(s)
-            if pd.is_available:
-                result[pd.flight_number].append(pd)
-    # 排序
-    for k, v in result.items():
-        result[k] = sorted(v, key=lambda t: t.datetime)
+    df = pandas.read_csv(path, encoding='UTF-8')
+    for vl in df.loc[:, FEATURES_COLUMNS].iterrows():
+        pd = PlaneData(*vl[1].to_list())
+        result[pd.flight_number].append(pd)
     # 拆分
     for v in result.values():
         now = None
@@ -43,21 +44,24 @@ def generate_track_point(a: PlaneData, b: PlaneData, t: datetime) -> PlaneData:
     longitude = (at * b.longitude + bt * a.longitude) / (at + bt) if a.longitude != b.longitude else a.longitude
     latitude = (at * b.latitude + bt * a.latitude) / (at + bt) if a.latitude != b.latitude else a.latitude
     height = (at * b.height + bt * a.height) / (at + bt) if a.height != b.height else a.height
-    return PlaneData(t, a.flight_number, height, longitude, latitude)
+    h2 = (at * b.height_2 + bt * a.height_2) / (at + bt) if a.height_2 != b.height_2 else a.height_2
+    gs = (at * b.ground_speed + bt * a.ground_speed) / (at + bt) if a.ground_speed != b.ground_speed else a.ground_speed
+    course = (at * b.course + bt * a.course) / (at + bt) if a.course != b.course else a.course
+    return PlaneData(t, a.flight_number, height, longitude, latitude, h2, gs, course)
 
 
-def max_min_time_interval(track: List[PlaneData]) -> Tuple[float, float]:
-    min_delta, max_delta = 100000.0, -1.0
-    now = None
-    for pd in track:
-        if now is None:
-            now = pd.datetime
-        else:
-            delta = pd.datetime - now
-            now = pd.datetime
-            min_delta = min(min_delta, delta.total_seconds())
-            max_delta = max(max_delta, delta.total_seconds())
-    return max_delta, min_delta
+# def max_min_time_interval(track: List[PlaneData]) -> Tuple[float, float]:
+#     min_delta, max_delta = 100000.0, -1.0
+#     now = None
+#     for pd in track:
+#         if now is None:
+#             now = pd.datetime
+#         else:
+#             delta = pd.datetime - now
+#             now = pd.datetime
+#             min_delta = min(min_delta, delta.total_seconds())
+#             max_delta = max(max_delta, delta.total_seconds())
+#     return max_delta, min_delta
 
 
 def find_pf_pr(track: List[PlaneData], t: datetime) -> Tuple[int, int]:
@@ -72,6 +76,20 @@ def find_pf_pr(track: List[PlaneData], t: datetime) -> Tuple[int, int]:
         else:
             return media, media
     return end - 1, end
+
+
+# def interpolation_track(track: List[PlaneData]) -> List[PlaneData]:
+#     for i, tk in enumerate(track):
+#         if tk.longitude == INT_NULL or tk.latitude == INT_NULL:
+#             pass
+#         if tk.height == INT_NULL:
+#             pass
+#         if tk.height_2 == INT_NULL:
+#             pass
+#         if tk.ground_speed == INT_NULL:
+#             pass
+#         if tk.course == INT_NULL:
+#             pass
 
 
 def sampling_track(track: List[PlaneData], microseconds: int) -> List[PlaneData]:
@@ -94,11 +112,11 @@ def sampling_track(track: List[PlaneData], microseconds: int) -> List[PlaneData]
 def data_track_iter() -> Generator[List[PlaneData], None, None]:
     # 一个txt表示一天的数据
     for s in os.listdir(DATA_DIR):
-        if not s.endswith('.txt'):
+        if not s.endswith('.csv'):
             continue
         # day, ext = os.path.splitext(s)
         s = os.path.join(DATA_DIR, s)
-        for track in process_data_a_day(s):
+        for track in process_data_a_file(s):
             track_2 = sampling_track(track, TRACK_POINT_TIME_INTERVAL)
             if len(track_2) > TRACK_MIN_POINT_NUM:
                 yield track_2
@@ -106,16 +124,24 @@ def data_track_iter() -> Generator[List[PlaneData], None, None]:
             #     print('丢弃', track_2[0].flight_number, len(track))
 
 
-def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[int, torch.Tensor, torch.Tensor], None, None]:
-    for idx, track in enumerate(data_track_iter()):
+def data_steps_iter(num_steps: int) -> Generator[Tuple[List[PlaneData], List[PlaneData]], None, None]:
+    '''航迹序列遍历'''
+    for track in data_track_iter():
         track_len = len(track)
-        batch_len = track_len // batch_size
-        steps = (batch_len - 1) // num_steps
-        matrix = []
-        for i in range(batch_size):
-            matrix.append([t.to_tuple() for t in track[i * batch_len : (i + 1) * batch_len]])
-        dts = torch.tensor(matrix)
-        for i in range(steps):
-            X = dts[:, i * num_steps : (i + 1) * num_steps]
-            Y = dts[:, i * num_steps + 1 : (i + 1) * num_steps + 1]
-            yield idx, X, Y
+        idxex = list(range((track_len - 1) // num_steps))
+        random.shuffle(idxex)
+        for i in idxex:
+            X = track[i * num_steps : (i + 1) * num_steps]
+            Y = track[i * num_steps + 1 : (i + 1) * num_steps + 1]
+            yield X, Y
+
+
+def data_iter(batch_size: int, num_steps: int) -> Generator[Tuple[torch.Tensor, torch.Tensor], None, None]:
+    matrix, matriy = [], []
+    for step_x, step_y in data_steps_iter(num_steps):
+        if len(matrix) >= batch_size:
+            yield torch.tensor(matrix), torch.tensor(matriy)
+            matrix.clear()
+            matriy.clear()
+        matrix.append([x.to_tuple() for x in step_x])
+        matriy.append([y.to_tuple() for y in step_y])

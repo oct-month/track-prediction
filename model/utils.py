@@ -4,7 +4,7 @@ from torch import nn
 import matplotlib.pyplot as plt
 
 from model import PlaneLSTMModule, loss
-from data_loader import PlaneDataSimple, NUM_FEATURES
+from data_loader import PlaneData, NUM_FEATURES
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -20,7 +20,7 @@ def grad_clipping(params: Iterator[nn.Parameter], theta: float) -> None:
             param.grad.data *= theta / norm.item()
 
 
-def predict(model: PlaneLSTMModule, basics: Sequence[PlaneDataSimple], num_pred: int) -> List[PlaneDataSimple]:
+def predict(model: PlaneLSTMModule, basics: Sequence[PlaneData], num_pred: int) -> List[PlaneData]:
     '''使用model基于basics预测num_pred个航迹点'''
     model.eval()
     state = None
@@ -32,19 +32,19 @@ def predict(model: PlaneLSTMModule, basics: Sequence[PlaneDataSimple], num_pred:
             result.append(basics[t + 1])
         else:
             tap = tuple(Y.view(-1).detach().cpu().numpy().tolist())
-            result.append(PlaneDataSimple.from_tuple(tap))
+            result.append(PlaneData.from_tuple(tap))
     model.train()
     return result
 
 
-def test_loss(track: Sequence[PlaneDataSimple], track_pred: Sequence[PlaneDataSimple]) -> float:
+def test_loss(track: Sequence[PlaneData], track_pred: Sequence[PlaneData]) -> float:
     y = torch.tensor([t.to_tuple() for t in track])
     y_p = torch.tensor([t.to_tuple() for t in track_pred])
     l = loss(y_p, y)
     return l.sum().item() / NUM_FEATURES / len(track)
 
 
-def draw_3d(track: Sequence[PlaneDataSimple], track_pred: Sequence[PlaneDataSimple]) -> None:
+def draw_3d(track: Sequence[PlaneData], track_pred: Sequence[PlaneData]) -> None:
     ax = plt.axes(projection='3d')
     ax.set_xlabel('longitude')
     ax.set_ylabel('latitude')
@@ -63,7 +63,7 @@ def draw_3d(track: Sequence[PlaneDataSimple], track_pred: Sequence[PlaneDataSimp
     plt.show()
 
 
-def draw_2d(track: Sequence[PlaneDataSimple], track_pred: Sequence[PlaneDataSimple], loss_list: Optional[Sequence[float]]=None) -> None:
+def draw_2d(track: Sequence[PlaneData], track_pred: Sequence[PlaneData], loss_list: Optional[Sequence[float]]=None) -> None:
     if loss_list is not None:
         plt.subplot(1, 2, 2)
         plt.xlabel('epoch')

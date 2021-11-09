@@ -67,11 +67,14 @@ class PlaneData:
     #     return torch.tensor(self.to_list())
 
 if __name__ == '__main__':
-    with open('data/20210401.txt', 'r', encoding='UTF-8') as f:
-        t = f.readlines()[1:]
-        for s in t:
-            pd = PlaneData.from_str(s)
-    print("num_all", num_all)
-    print("num_none", num_none)
-    print("num_height", num_height)
-    print("num_height2", num_height2)
+    # with open('data/20210401.txt', 'r', encoding='UTF-8') as f:
+    #     t = f.readlines()[1:]
+    #     for s in t:
+    #         pd = PlaneData.from_str(s)
+    # print("num_all", num_all)
+    # print("num_none", num_none)
+    # print("num_height", num_height)
+    # print("num_height2", num_height2)
+
+    t = datetime.fromtimestamp(57628.47345)
+    print(t)

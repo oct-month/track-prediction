@@ -10,7 +10,7 @@ class PlaneLSTMModule(nn.Module):
         self.feature_size = feature_size
         # self.dense = nn.Linear(in_features=self.hidden_size, out_features=feature_size, bias=True)
         self.dense = nn.Sequential(
-            nn.Dropout(p=0.8),
+            nn.Dropout(p=0.9),
             nn.Linear(in_features=self.hidden_size, out_features=feature_size, bias=True)
         )
 

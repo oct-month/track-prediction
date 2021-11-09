@@ -8,10 +8,12 @@ matplotlib = "*"
 torch = "1.8.2+cu102"
 torchvision = "0.9.2+cu102"
 torchaudio = "0.8.2"
+pandas = "*"
 
 [dev-packages]
 mypy = "*"
 autopep8 = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.8"
