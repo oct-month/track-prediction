@@ -9,4 +9,4 @@ test/
 
 Pipfile.lock
 
-*.pt
+# *.pt

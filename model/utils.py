@@ -20,7 +20,7 @@ def grad_clipping(params: Iterator[nn.Parameter], theta: float) -> None:
             param.grad.data *= theta / norm.item()
 
 
-def predict(model: PlaneLSTMModule, basics: Sequence[PlaneData], num_pred: int) -> List[PlaneData]:
+def predict(model: PlaneLSTMModule, basics: Sequence[PlaneData], num_pred: int, device: torch.device = device) -> List[PlaneData]:
     '''使用model基于basics预测num_pred个航迹点'''
     model.eval()
     state = None

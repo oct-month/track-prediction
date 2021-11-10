@@ -9,14 +9,14 @@ from config import PARAMS_PATH, num_hiddens, lr, clipping_theta, num_epochs, bat
 
 
 if __name__ == '__main__':
-    model = PlaneLSTMModule(num_hiddens, NUM_FEATURES).to(device)
-    # if os.path.isfile(PARAMS_PATH):
-    #      model.load_state_dict(torch.load(PARAMS_PATH))
-    # else:
-    #     for param in model.parameters():
-    #         nn.init.normal_(param)
-    for param in model.parameters():
-        nn.init.normal_(param, mean=0, std=0.1)
+    model = PlaneLSTMModule(num_hiddens, NUM_FEATURES).cpu()
+    if os.path.isfile(PARAMS_PATH):
+        model.load_state_dict(torch.load(PARAMS_PATH))
+    else:
+        for param in model.parameters():
+            nn.init.normal_(param, mean=0, std=1)
+    model = model.to(device)
+
     optimizer = optim.SGD(model.parameters(), lr=lr)
 
     loss_list = []
@@ -38,7 +38,8 @@ if __name__ == '__main__':
         loss_list.append(l_sum / n)
         print(f'epoch {epoch}, loss {loss_list[-1]}, time {time() - start}, n {n}.')
 
-    # torch.save(model.state_dict(), PARAMS_PATH)
+    torch.save(model.cpu().state_dict(), PARAMS_PATH)
+    model = model.to(device)
 
     for track in data_track_iter():
         track_pred = predict(model, track[:1000], len(track) - 1000)

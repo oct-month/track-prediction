@@ -1,0 +1,19 @@
+[[source]]
+url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
+verify_ssl = true
+name = "custom"
+
+[packages]
+matplotlib = "*"
+pandas = "*"
+torch = "1.8.2+cpu"
+torchvision = "0.9.2+cpu"
+torchaudio = "0.8.2"
+
+[dev-packages]
+mypy = "*"
+autopep8 = "*"
+ipykernel = "*"
+
+[requires]
+python_version = "3.6"
