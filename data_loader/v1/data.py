@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Optional, Tuple, Union
 
+from .utils import fromisoformat
 # from .config import HEIGHT_MAX, HEIGHT_MIN, INT_NULL, LATITUDE_MAX, LATITUDE_MIN, LONGITUDE_MAX, LONGITUDE_MIN
-
 # from .rule import DataRule
 
 
@@ -37,7 +37,7 @@ class PlaneData(PlaneDataSimple):
         if dt is None or isinstance(dt, datetime):
             self.datetime = dt
         else:
-            self.datetime = datetime.fromisoformat(dt)  # 时间
+            self.datetime = fromisoformat(dt)  # 时间
         self.flight_number = fn                         # 航班号
         self.height_2 = h2                              # 飞行高度
         self.ground_speed = gs                          # 地速
