@@ -94,7 +94,7 @@ def find_pf_pr(track: List[PlaneData], t: datetime) -> Tuple[int, int]:
 
 def sampling_track(track: List[PlaneData], s: int) -> List[PlaneData]:
     '''每隔s秒取一个航迹点'''
-    microseconds = s * 1e6
+    microseconds = s * int(1e6)
     start = track[0].datetime
     end = track[-1].datetime
     num = math.floor((end - start).total_seconds() * (1e6)) // microseconds
