@@ -19,7 +19,7 @@ all_structs = []
 
 
 class Iface(object):
-    def forecast_xy(self, fn, x, y, h, v, course):
+    def forecast_xy(self, fn, x, y, h, v, course, dx, dy):
         """
         Parameters:
          - fn
@@ -28,11 +28,13 @@ class Iface(object):
          - h
          - v
          - course
+         - dx
+         - dy
 
         """
         pass
 
-    def forecast_ll(self, fn, longi, lati, h, v, course):
+    def forecast_ll(self, fn, longi, lati, h, v, course, dlongi, dlati):
         """
         Parameters:
          - fn
@@ -41,6 +43,8 @@ class Iface(object):
          - h
          - v
          - course
+         - dlongi
+         - dlati
 
         """
         pass
@@ -53,7 +57,7 @@ class Client(Iface):
             self._oprot = oprot
         self._seqid = 0
 
-    def forecast_xy(self, fn, x, y, h, v, course):
+    def forecast_xy(self, fn, x, y, h, v, course, dx, dy):
         """
         Parameters:
          - fn
@@ -62,12 +66,14 @@ class Client(Iface):
          - h
          - v
          - course
+         - dx
+         - dy
 
         """
-        self.send_forecast_xy(fn, x, y, h, v, course)
+        self.send_forecast_xy(fn, x, y, h, v, course, dx, dy)
         return self.recv_forecast_xy()
 
-    def send_forecast_xy(self, fn, x, y, h, v, course):
+    def send_forecast_xy(self, fn, x, y, h, v, course, dx, dy):
         self._oprot.writeMessageBegin('forecast_xy', TMessageType.CALL, self._seqid)
         args = forecast_xy_args()
         args.fn = fn
@@ -76,6 +82,8 @@ class Client(Iface):
         args.h = h
         args.v = v
         args.course = course
+        args.dx = dx
+        args.dy = dy
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -95,7 +103,7 @@ class Client(Iface):
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "forecast_xy failed: unknown result")
 
-    def forecast_ll(self, fn, longi, lati, h, v, course):
+    def forecast_ll(self, fn, longi, lati, h, v, course, dlongi, dlati):
         """
         Parameters:
          - fn
@@ -104,12 +112,14 @@ class Client(Iface):
          - h
          - v
          - course
+         - dlongi
+         - dlati
 
         """
-        self.send_forecast_ll(fn, longi, lati, h, v, course)
+        self.send_forecast_ll(fn, longi, lati, h, v, course, dlongi, dlati)
         return self.recv_forecast_ll()
 
-    def send_forecast_ll(self, fn, longi, lati, h, v, course):
+    def send_forecast_ll(self, fn, longi, lati, h, v, course, dlongi, dlati):
         self._oprot.writeMessageBegin('forecast_ll', TMessageType.CALL, self._seqid)
         args = forecast_ll_args()
         args.fn = fn
@@ -118,6 +128,8 @@ class Client(Iface):
         args.h = h
         args.v = v
         args.course = course
+        args.dlongi = dlongi
+        args.dlati = dlati
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -172,7 +184,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = forecast_xy_result()
         try:
-            result.success = self._handler.forecast_xy(args.fn, args.x, args.y, args.h, args.v, args.course)
+            result.success = self._handler.forecast_xy(args.fn, args.x, args.y, args.h, args.v, args.course, args.dx, args.dy)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -195,7 +207,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = forecast_ll_result()
         try:
-            result.success = self._handler.forecast_ll(args.fn, args.longi, args.lati, args.h, args.v, args.course)
+            result.success = self._handler.forecast_ll(args.fn, args.longi, args.lati, args.h, args.v, args.course, args.dlongi, args.dlati)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -224,17 +236,21 @@ class forecast_xy_args(object):
      - h
      - v
      - course
+     - dx
+     - dy
 
     """
 
 
-    def __init__(self, fn=None, x=None, y=None, h=None, v=None, course=None,):
+    def __init__(self, fn=None, x=None, y=None, h=None, v=None, course=None, dx=None, dy=None,):
         self.fn = fn
         self.x = x
         self.y = y
         self.h = h
         self.v = v
         self.course = course
+        self.dx = dx
+        self.dy = dy
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -275,6 +291,16 @@ class forecast_xy_args(object):
                     self.course = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.DOUBLE:
+                    self.dx = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.DOUBLE:
+                    self.dy = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -309,6 +335,14 @@ class forecast_xy_args(object):
             oprot.writeFieldBegin('course', TType.DOUBLE, 6)
             oprot.writeDouble(self.course)
             oprot.writeFieldEnd()
+        if self.dx is not None:
+            oprot.writeFieldBegin('dx', TType.DOUBLE, 7)
+            oprot.writeDouble(self.dx)
+            oprot.writeFieldEnd()
+        if self.dy is not None:
+            oprot.writeFieldBegin('dy', TType.DOUBLE, 8)
+            oprot.writeDouble(self.dy)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -334,6 +368,8 @@ forecast_xy_args.thrift_spec = (
     (4, TType.DOUBLE, 'h', None, None, ),  # 4
     (5, TType.DOUBLE, 'v', None, None, ),  # 5
     (6, TType.DOUBLE, 'course', None, None, ),  # 6
+    (7, TType.DOUBLE, 'dx', None, None, ),  # 7
+    (8, TType.DOUBLE, 'dy', None, None, ),  # 8
 )
 
 
@@ -407,17 +443,21 @@ class forecast_ll_args(object):
      - h
      - v
      - course
+     - dlongi
+     - dlati
 
     """
 
 
-    def __init__(self, fn=None, longi=None, lati=None, h=None, v=None, course=None,):
+    def __init__(self, fn=None, longi=None, lati=None, h=None, v=None, course=None, dlongi=None, dlati=None,):
         self.fn = fn
         self.longi = longi
         self.lati = lati
         self.h = h
         self.v = v
         self.course = course
+        self.dlongi = dlongi
+        self.dlati = dlati
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -458,6 +498,16 @@ class forecast_ll_args(object):
                     self.course = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.DOUBLE:
+                    self.dlongi = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.DOUBLE:
+                    self.dlati = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -492,6 +542,14 @@ class forecast_ll_args(object):
             oprot.writeFieldBegin('course', TType.DOUBLE, 6)
             oprot.writeDouble(self.course)
             oprot.writeFieldEnd()
+        if self.dlongi is not None:
+            oprot.writeFieldBegin('dlongi', TType.DOUBLE, 7)
+            oprot.writeDouble(self.dlongi)
+            oprot.writeFieldEnd()
+        if self.dlati is not None:
+            oprot.writeFieldBegin('dlati', TType.DOUBLE, 8)
+            oprot.writeDouble(self.dlati)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -517,6 +575,8 @@ forecast_ll_args.thrift_spec = (
     (4, TType.DOUBLE, 'h', None, None, ),  # 4
     (5, TType.DOUBLE, 'v', None, None, ),  # 5
     (6, TType.DOUBLE, 'course', None, None, ),  # 6
+    (7, TType.DOUBLE, 'dlongi', None, None, ),  # 7
+    (8, TType.DOUBLE, 'dlati', None, None, ),  # 8
 )
 
 
