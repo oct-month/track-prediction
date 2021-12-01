@@ -1,8 +1,6 @@
-from typing import Iterator, List, Optional, Sequence
-from mxnet import nd, gpu, cpu, Context, autograd
+from typing import List, Sequence
+from mxnet import nd, cpu, Context, autograd
 from mxnet.gluon.parameter import ParameterDict
-from mxnet.util import get_gpu_count
-import matplotlib.pyplot as plt
 
 from data_loader import PlaneData, NUM_FEATURES
 from .model import PlaneLSTMModule, loss
@@ -44,46 +42,44 @@ def test_loss(track: Sequence[PlaneData], track_pred: Sequence[PlaneData]) -> fl
     return l.sum().asscalar() / NUM_FEATURES / len(track)
 
 
-def draw_3d(track: Sequence[PlaneData], track_pred: Sequence[PlaneData]) -> None:
-    ax = plt.axes(projection='3d')
-    ax.set_xlabel('longitude')
-    ax.set_ylabel('latitude')
-    ax.set_zlabel('height')
+# def draw_3d(track: Sequence[PlaneData], track_pred: Sequence[PlaneData]) -> None:
+#     ax = plt.axes(projection='3d')
+#     ax.set_xlabel('longitude')
+#     ax.set_ylabel('latitude')
+#     ax.set_zlabel('height')
 
-    X = [dt.longitude for dt in track]
-    Y = [dt.latitude for dt in track]
-    Z = [dt.height for dt in track]
-    ax.scatter3D(X, Y, Z, c='blue')
+#     X = [dt.longitude for dt in track]
+#     Y = [dt.latitude for dt in track]
+#     Z = [dt.height for dt in track]
+#     ax.scatter3D(X, Y, Z, c='blue')
 
-    X_p = [dt.longitude for dt in track_pred]
-    Y_p = [dt.latitude for dt in track_pred]
-    Z_p = [dt.height for dt in track_pred]
-    ax.scatter3D(X_p, Y_p, Z_p, c='red')
+#     X_p = [dt.longitude for dt in track_pred]
+#     Y_p = [dt.latitude for dt in track_pred]
+#     Z_p = [dt.height for dt in track_pred]
+#     ax.scatter3D(X_p, Y_p, Z_p, c='red')
 
-    # plt.show()
-    plt.savefig("draw_3d.png")
+#     plt.savefig("draw_3d.png")
 
 
-def draw_2d(track: Sequence[PlaneData], track_pred: Sequence[PlaneData], loss_list: Optional[Sequence[float]]=None) -> None:
-    if loss_list is not None:
-        plt.subplot(1, 2, 2)
-        plt.xlabel('epoch')
-        plt.ylabel('loss')
-        X_l = range(1, len(loss_list) + 1)
-        Y_l = loss_list
-        plt.plot(X_l, Y_l, label='loss')
+# def draw_2d(track: Sequence[PlaneData], track_pred: Sequence[PlaneData], loss_list: Optional[Sequence[float]]=None) -> None:
+#     if loss_list is not None:
+#         plt.subplot(1, 2, 2)
+#         plt.xlabel('epoch')
+#         plt.ylabel('loss')
+#         X_l = range(1, len(loss_list) + 1)
+#         Y_l = loss_list
+#         plt.plot(X_l, Y_l, label='loss')
 
-        plt.subplot(1, 2, 1)
+#         plt.subplot(1, 2, 1)
 
-    plt.xlabel('longitude')
-    plt.ylabel('latitude')
-    X = [dt.longitude for dt in track]
-    Y = [dt.latitude for dt in track]
-    plt.scatter(X, Y, c='blue', s=0.5, label='base')
-    X_p = [dt.longitude for dt in track_pred]
-    Y_p = [dt.latitude for dt in track_pred]
-    plt.scatter(X_p, Y_p, c='red', s=0.5, label='predict')
+#     plt.xlabel('longitude')
+#     plt.ylabel('latitude')
+#     X = [dt.longitude for dt in track]
+#     Y = [dt.latitude for dt in track]
+#     plt.scatter(X, Y, c='blue', s=0.5, label='base')
+#     X_p = [dt.longitude for dt in track_pred]
+#     Y_p = [dt.latitude for dt in track_pred]
+#     plt.scatter(X_p, Y_p, c='red', s=0.5, label='predict')
 
-    plt.legend()
-    plt.savefig("draw_2d.png")
-    # plt.show()
+#     plt.legend()
+#     plt.savefig("draw_2d.png")

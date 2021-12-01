@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from mxnet import nd
 from mxnet.gluon import nn, rnn, loss as gloss
 

@@ -6,7 +6,6 @@ name = "custom"
 [packages]
 thrift = "*"
 pandas = "*"
-matplotlib = "*"
 mxnet = "*"
 
 [dev-packages]
