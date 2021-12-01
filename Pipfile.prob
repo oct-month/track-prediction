@@ -7,7 +7,7 @@ name = "custom"
 thrift = "*"
 pandas = "*"
 matplotlib = "*"
-mxnet-cu102 = "*"
+mxnet = "*"
 
 [dev-packages]
 mypy = "*"

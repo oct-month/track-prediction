@@ -1,6 +1,4 @@
 import os
-import torch
-from torch import nn
 
 from model import device, PlaneLSTMModule, predict, draw_2d, draw_3d
 from data_loader import data_track_iter, NUM_FEATURES
@@ -8,12 +6,11 @@ from config import PARAMS_PATH, num_hiddens
 
 
 if __name__ == '__main__':
-    model = PlaneLSTMModule(num_hiddens, NUM_FEATURES).to(device)
+    model = PlaneLSTMModule(num_hiddens, NUM_FEATURES)
     if os.path.isfile(PARAMS_PATH):
-         model.load_state_dict(torch.load(PARAMS_PATH))
+        model.load_parameters(PARAMS_PATH, ctx=device)
     else:
-        for param in model.parameters():
-            nn.init.normal_(param)
+        model.initialize(ctx=device)
 
     steps = 1
     for i, track in enumerate(data_track_iter()):
