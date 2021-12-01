@@ -45,8 +45,8 @@ if __name__ == '__main__':
     model.save_parameters(PARAMS_PATH)
 
     for track in data_track_iter():
-        track_pred = predict(model, track[:1000], len(track) - 1000)
-        draw_2d(track[::100], track_pred[1000::10], loss_list)
+        track_pred = predict(model, track[:100], len(track) - 100)
+        draw_2d(track[::10], track_pred[100::10], loss_list)
         print('test loss', test_loss(track, track_pred))
         print(len(track_pred))
         # print(track[-1].to_tuple())
