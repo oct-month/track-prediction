@@ -1,6 +1,6 @@
 service intelligence {
-    i32 forecast_xy(1:string fn, 2:double x, 3:double y, 4:double h, 5:double v, 6:double course, 7:double dx, 8:double dy);
-    i32 forecast_ll(1:string fn, 2:double longi, 3:double lati, 4:double h, 5:double v, 6:double course, 7:double dlongi, 8:double dlati);
+    double forecast_xy(1:string fn, 2:double x, 3:double y, 4:double h, 5:double v, 6:double course, 7:double dx, 8:double dy);
+    double forecast_ll(1:string fn, 2:double longi, 3:double lati, 4:double h, 5:double v, 6:double course, 7:double dlongi, 8:double dlati);
 }
 
 // @Return 需要的时间（秒）

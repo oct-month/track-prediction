@@ -394,8 +394,8 @@ class forecast_xy_result(object):
             if ftype == TType.STOP:
                 break
             if fid == 0:
-                if ftype == TType.I32:
-                    self.success = iprot.readI32()
+                if ftype == TType.DOUBLE:
+                    self.success = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             else:
@@ -409,8 +409,8 @@ class forecast_xy_result(object):
             return
         oprot.writeStructBegin('forecast_xy_result')
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.I32, 0)
-            oprot.writeI32(self.success)
+            oprot.writeFieldBegin('success', TType.DOUBLE, 0)
+            oprot.writeDouble(self.success)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -430,7 +430,7 @@ class forecast_xy_result(object):
         return not (self == other)
 all_structs.append(forecast_xy_result)
 forecast_xy_result.thrift_spec = (
-    (0, TType.I32, 'success', None, None, ),  # 0
+    (0, TType.DOUBLE, 'success', None, None, ),  # 0
 )
 
 
@@ -601,8 +601,8 @@ class forecast_ll_result(object):
             if ftype == TType.STOP:
                 break
             if fid == 0:
-                if ftype == TType.I32:
-                    self.success = iprot.readI32()
+                if ftype == TType.DOUBLE:
+                    self.success = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             else:
@@ -616,8 +616,8 @@ class forecast_ll_result(object):
             return
         oprot.writeStructBegin('forecast_ll_result')
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.I32, 0)
-            oprot.writeI32(self.success)
+            oprot.writeFieldBegin('success', TType.DOUBLE, 0)
+            oprot.writeDouble(self.success)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -637,7 +637,7 @@ class forecast_ll_result(object):
         return not (self == other)
 all_structs.append(forecast_ll_result)
 forecast_ll_result.thrift_spec = (
-    (0, TType.I32, 'success', None, None, ),  # 0
+    (0, TType.DOUBLE, 'success', None, None, ),  # 0
 )
 fix_spec(all_structs)
 del all_structs

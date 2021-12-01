@@ -24,8 +24,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('Usage: ' + sys.argv[0] + ' [-h host[:port]] [-u url] [-f[ramed]] [-s[sl]] [-novalidate] [-ca_certs certs] [-keyfile keyfile] [-certfile certfile] function [arg1 [arg2...]]')
     print('')
     print('Functions:')
-    print('  i32 forecast_xy(string fn, double x, double y, double h, double v, double course, double dx, double dy)')
-    print('  i32 forecast_ll(string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati)')
+    print('  double forecast_xy(string fn, double x, double y, double h, double v, double course, double dx, double dy)')
+    print('  double forecast_ll(string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati)')
     print('')
     sys.exit(0)
 
