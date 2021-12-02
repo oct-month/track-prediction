@@ -1,2 +1,2 @@
 thrift --gen py -out service api.thrift
-thrift --gen netstd -out client api.thrift
+thrift-0.12.0 --gen csharp -out client api.thrift

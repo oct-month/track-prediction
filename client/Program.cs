@@ -1,13 +1,14 @@
-﻿using Thrift;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Thrift;
 using Thrift.Collections;
 
 using Thrift.Protocol;
-using Thrift.Protocol.Entities;
-using Thrift.Protocol.Utilities;
 using Thrift.Transport;
-using Thrift.Transport.Client;
-using Thrift.Transport.Server;
-using Thrift.Processor;
+
 
 public static class Program
 {

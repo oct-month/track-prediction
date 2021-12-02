@@ -8,12 +8,8 @@ using Thrift;
 using Thrift.Collections;
 
 using Thrift.Protocol;
-using Thrift.Protocol.Entities;
-using Thrift.Protocol.Utilities;
 using Thrift.Transport;
-using Thrift.Transport.Client;
-using Thrift.Transport.Server;
-using Thrift.Processor;
+
 
 public class modeluse
 {
@@ -22,7 +18,7 @@ public class modeluse
 
     public modeluse()
     {
-        tTransport = new TSocketTransport("127.0.0.1", 3000, null);
+        tTransport = new TSocket("127.0.0.1", 3000);
         TProtocol protocol = new TBinaryProtocol(tTransport);
         client = new intelligence.Client(protocol);
     }
@@ -39,17 +35,17 @@ public class modeluse
     {
         if (!tTransport.IsOpen)
         {
-            tTransport.OpenAsync().GetAwaiter().GetResult();
+            tTransport.Open();
         }
-        return client.forecast_ll(fn, longi, lati, h, v, course, dlongi, dlati).GetAwaiter().GetResult();
+        return client.forecast_ll(fn, longi, lati, h, v, course, dlongi, dlati);
     }
 
     public double forecast_xy(string fn, double x, double y, double h, double v, double course, double dx, double dy)
     {
         if (!tTransport.IsOpen)
         {
-            tTransport.OpenAsync().GetAwaiter().GetResult();
+            tTransport.Open();
         }
-        return client.forecast_xy(fn, x, y, h, v, course, dx, dy).GetAwaiter().GetResult();
+        return client.forecast_xy(fn, x, y, h, v, course, dx, dy);
     }
 }
