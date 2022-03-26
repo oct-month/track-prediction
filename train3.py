@@ -11,7 +11,7 @@ from data_loader import data_iter
 gpu_counts = get_gpu_count()
 devices = [gpu(i) for i in range(gpu_counts)] if gpu_counts > 0 else [cpu()]
 
-batch_size = 100
+batch_size = 120
 num_epochs = 10
 PARAMS_PATH = './params-hybrid.pt'
 

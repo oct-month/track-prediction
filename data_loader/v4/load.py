@@ -15,9 +15,9 @@ def data_iter(batch_size: int, ctx=None):
     for pp in os.listdir(DATA_DIR):
         p = os.path.join(DATA_DIR, pp)
         df = pd.read_csv(p, sep=',')
-        for i in range(df.shape[0] - 7):
-            features = df.loc[i:i+6, FEATURES_COLUMNS].T
-            label = df.loc[i+7, LABEL_COLUMNS]
+        for i in range(df.shape[0] - 6):
+            features = df.loc[i:i+5, FEATURES_COLUMNS].T
+            label = df.loc[i+6, LABEL_COLUMNS]
             X.append(features.to_numpy().tolist())
             Y.append(label.to_numpy().tolist())
             if len(X) >= batch_size:
