@@ -1,0 +1,5 @@
+[submodule "radar-cat048"]
+	path = radar-cat048
+	url = ../radar-cat048.git
+	branch = master
+	status = addon
