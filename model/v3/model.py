@@ -71,7 +71,7 @@ class HybridCNNLSTM(nn.Block):
         return self.dense_net(Xl), state
 
     def begin_state(self, batch_size, gpu_counts=1):
-        return [self.lstm_net.begin_state(batch_size=batch_size) for i in range(gpu_counts)]
+        return [self.lstm_net.begin_state(batch_size=batch_size // gpu_counts) for i in range(gpu_counts)]
 
 
 loss = gloss.L2Loss()
