@@ -1,3 +1,3 @@
 call .venv/Scripts/activate.bat
-python app.py
+python -u app.py
 @pause

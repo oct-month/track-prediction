@@ -11,7 +11,7 @@ LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
 X = []
 Y = []
 
-def data_iter(batch_size: int, ctx=None):
+def data_iter(batch_size, ctx=None):
     for pp in os.listdir(DATA_DIR):
         p = os.path.join(DATA_DIR, pp)
         df = pd.read_csv(p, sep=',')
@@ -24,3 +24,6 @@ def data_iter(batch_size: int, ctx=None):
                 yield nd.array(X, ctx=ctx), nd.array(Y, ctx=ctx)
                 X.clear()
                 Y.clear()
+
+# def data_iter_static(batch_size, ctx=None):
+#     data_iter(batch_size, ctx)
