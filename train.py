@@ -60,7 +60,7 @@ if __name__ == '__main__':
             l_sum += sum([l.sum().asscalar() for l in losses])
             n += batch_size
         # 测试
-        state_test = model.begin_state(batch_size, devices[:1])
+        state_test = model.begin_state(batch_size, devices[:1])[0]
         y, state_test = model(X_test, state_test)
         l_test = loss(y, Y_test).sum().asscalar() / batch_size
         # 输出
