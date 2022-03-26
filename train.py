@@ -23,16 +23,16 @@ if __name__ == '__main__':
 
     optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': 0.001})
 
+    # 载入数据集
+    datasets = []
+    for X, Y in data_iter(batch_size):
+        X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
+        Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
+        datasets.append((X_list, Y_list))
+
     for epoch in range(1, num_epochs):
         print(f'epoch {epoch}, ', end='')
         l_sum, n, start = 0.0, 0, time()
-
-        # 载入数据集
-        datasets = []
-        for X, Y in data_iter(batch_size):
-            X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
-            Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
-            datasets.append((X_list, Y_list))
 
         # 训练
         for X_list, Y_list in datasets:
