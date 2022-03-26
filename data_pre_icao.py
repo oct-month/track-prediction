@@ -75,5 +75,5 @@ for i, pn in enumerate(pnames):
         dt.dropna(axis=0, how='any', subset=FEATURES_COLUMNS[2:], inplace=True)
         # 保存csv
         if dt.shape[0] >= TRACK_MIN_POINT_NUM:
-            file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + i + '.csv')
+            file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + str(i) + '.csv')
             dt.to_csv(file_name, index=True, encoding='UTF-8')
