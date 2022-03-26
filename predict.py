@@ -1,12 +1,11 @@
-from time import time
-from mxnet import autograd, gpu, cpu
-from mxnet.gluon import Trainer
+from mxnet import nd, gpu, cpu
 from mxnet.gluon.utils import split_and_load
 from mxnet.util import get_gpu_count
 import matplotlib.pyplot as plt
 
-from model import HybridCNNLSTM, loss
+from model import HybridCNNLSTM
 from data_loader import data_iter
+
 
 LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
 LABEL_NORMALIZATION = [
@@ -24,13 +23,11 @@ batch_size = 1200
 num_epochs = 10
 PARAMS_PATH = './params-hybrid.pt'
 
+
 # batch channel sequeu
 if __name__ == '__main__':
     model = HybridCNNLSTM()
     model.initialize(ctx=devices)
-    states = model.begin_state(batch_size, devices)
-
-    optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': 0.0001})
 
     # 载入训练数据集
     datasets = []
@@ -38,34 +35,11 @@ if __name__ == '__main__':
         X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
         Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
         datasets.append((X_list, Y_list))
+        break
     # 测试集
     datasets.pop()
-    X_test = X.copyto(devices[0])
-    Y_test = Y.copyto(devices[0])
-
-    # 训练
-    for epoch in range(1, num_epochs):
-        print(f'epoch {epoch}, ', end='')
-        l_sum, n, start = 0.0, 0, time()
-
-        for X_list, Y_list in datasets:
-            losses = []
-            with autograd.record():
-                for i, (Xs, Ys) in enumerate(zip(X_list, Y_list)):
-                    y, states[i] = model(Xs, states[i])
-                    l = loss(y, Ys)
-                    losses.append(l)
-            autograd.backward(losses)
-            optimizer.step(batch_size)
-            l_sum += sum([l.sum().asscalar() for l in losses])
-            n += batch_size
-        # 测试
-        state_test = model.begin_state(batch_size, devices[:1])
-        y, state_test = model(X_test, state_test)
-        l_test = loss(y, Y_test).sum().asscalar() / batch_size
-        # 输出
-        print(f'loss {l_sum / n}, time {time() - start}, n {n}, test loss {l_test}.')
-    model.save_parameters(PARAMS_PATH)
+    X_test: nd.NDArray = X.copyto(devices[0])
+    Y_test: nd.NDArray = Y.copyto(devices[0])
 
     # predict
     LON, LATI, HEI = [], [], []
@@ -88,4 +62,4 @@ if __name__ == '__main__':
         Y_test[:, 1].asnumpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
         Y_test[:, 2].asnumpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0]
     )
-    plt.savefig('predict.png')
+    plt.show()

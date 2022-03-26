@@ -1,4 +1,4 @@
-from mxnet import Context
+from mxnet import cpu
 from mxnet.gluon import nn, rnn, loss as gloss
 
 class HybridCNNLSTM(nn.Block):
@@ -70,7 +70,7 @@ class HybridCNNLSTM(nn.Block):
         Xl, state = self.lstm_net(Xc, state)
         return self.dense_net(Xl), state
 
-    def begin_state(self, batch_size, devices):
+    def begin_state(self, batch_size, devices=[cpu()]):
         gpu_counts = len(devices)
         states = []
         for i in range(gpu_counts):
