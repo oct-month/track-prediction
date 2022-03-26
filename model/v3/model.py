@@ -1,4 +1,3 @@
-from mxnet import initializer
 from mxnet.gluon import nn, rnn, loss as gloss
 
 
@@ -64,17 +63,15 @@ class HybridCNNLSTM(nn.Block):
             flatten=True,
             in_units=50
         )
-        self.state = None
     
-    def forward(self, X):
+    def forward(self, X, state):
         Xc = self.cnn_net(X)
         Xc = Xc.reshape(0, -1, Xc.shape[-2])
-        Xl, self.state = self.lstm_net(Xc, self.state)
-        return self.dense_net(Xl)
-    
-    def initialize(self, batch_size, ctx=None, verbose=False, force_reinit=False):
-        self.state = self.lstm_net.begin_state(batch_size=batch_size)
-        return super().initialize(initializer.Uniform(), ctx, verbose, force_reinit)
+        Xl, state = self.lstm_net(Xc, state)
+        return self.dense_net(Xl), state
+
+    def begin_state(self, batch_size, gpu_counts=1):
+        return [self.lstm_net.begin_state(batch_size=batch_size) for i in range(gpu_counts)]
 
 
 loss = gloss.L2Loss()

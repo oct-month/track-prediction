@@ -18,7 +18,8 @@ PARAMS_PATH = './params-hybrid.pt'
 # batch channel sequeu
 if __name__ == '__main__':
     model = HybridCNNLSTM()
-    model.initialize(batch_size, ctx=devices)
+    model.initialize(ctx=devices)
+    states = model.begin_state(batch_size, gpu_counts)
 
     optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': 0.001})
 
@@ -27,9 +28,12 @@ if __name__ == '__main__':
         for X, Y in data_iter(batch_size):
             X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
             Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
+            losses = []
             with autograd.record():
-                losses = [loss(model(Xs), Ys) for Xs, Ys in zip(X_list, Y_list)]
-                # l = loss(model(X), Y).sum()
+                for i, (Xs, Ys) in enumerate(zip(X_list, Y_list)):
+                    y, states[i] = model(Xs, states[i])
+                    l = loss(y, Ys)
+                    losses.append(l)
             autograd.backward(losses)
             optimizer.step(batch_size)
             l_sum += sum([l.sum().asscalar() for l in losses])
