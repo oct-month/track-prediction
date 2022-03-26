@@ -18,8 +18,8 @@ def data_iter(batch_size: int, ctx=None):
         for i in range(df.shape[0] - 7):
             features = df.loc[i:i+6, FEATURES_COLUMNS].T
             label = df.loc[i+7, LABEL_COLUMNS]
-            X.append(features.to_numpy().tolist())
-            Y.append(label.to_numpy().tolist())
+            X.append(nd.array(features.to_numpy().tolist()))
+            Y.append(nd.array(label.to_numpy().tolist()))
             if len(X) >= batch_size:
                 yield nd.array(X, ctx=ctx), nd.array(Y, ctx=ctx)
                 X.clear()
