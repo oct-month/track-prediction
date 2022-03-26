@@ -26,6 +26,7 @@ if __name__ == '__main__':
     for epoch in range(1, num_epochs):
         l_sum, n, start = 0.0, 0, time()
         for X, Y in data_iter(batch_size):
+            print('.', end='')
             X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
             Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
             losses = []
@@ -38,6 +39,6 @@ if __name__ == '__main__':
             optimizer.step(batch_size)
             l_sum += sum([l.sum().asscalar() for l in losses])
             n += Y.shape[0]
-        print(f'epoch {epoch}, loss {l_sum / n}, time {time() - start}, n {n}.')
+        print(f'\nepoch {epoch}, loss {l_sum / n}, time {time() - start}, n {n}.')
     
     model.save_parameters()
