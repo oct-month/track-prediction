@@ -19,7 +19,7 @@ PARAMS_PATH = './params-hybrid.pt'
 if __name__ == '__main__':
     model = HybridCNNLSTM()
     model.initialize(ctx=devices)
-    states = model.begin_state(batch_size, gpu_counts)
+    states = model.begin_state(batch_size, devices)
 
     optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': 0.001})
 

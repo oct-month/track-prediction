@@ -1,5 +1,5 @@
+from mxnet import Context
 from mxnet.gluon import nn, rnn, loss as gloss
-
 
 class HybridCNNLSTM(nn.Block):
     def __init__(self, prefix=None, params=None):
@@ -70,8 +70,15 @@ class HybridCNNLSTM(nn.Block):
         Xl, state = self.lstm_net(Xc, state)
         return self.dense_net(Xl), state
 
-    def begin_state(self, batch_size, gpu_counts=1):
-        return [self.lstm_net.begin_state(batch_size=batch_size // gpu_counts) for i in range(gpu_counts)]
+    def begin_state(self, batch_size, devices):
+        gpu_counts = len(devices)
+        states = []
+        for i in range(gpu_counts):
+            t = self.lstm_net.begin_state(batch_size=batch_size // gpu_counts)
+            for j, ts in enumerate(t):
+                t[j] = ts.copyto(devices[i])
+            states.append(t)
+        return states
 
 
 loss = gloss.L2Loss()
