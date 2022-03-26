@@ -1,6 +1,7 @@
 from time import time
 from mxnet import autograd, gpu, cpu
 from mxnet.gluon import Trainer
+from mxnet.gluon.utils import split_and_load
 from mxnet.util import get_gpu_count
 
 from model import HybridCNNLSTM, loss
@@ -23,12 +24,15 @@ if __name__ == '__main__':
 
     for epoch in range(1, num_epochs):
         l_sum, n, start = 0.0, 0, time()
-        for X, Y in data_iter(batch_size, ctx=devices):
+        for X, Y in data_iter(batch_size):
+            X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
+            Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
             with autograd.record():
-                l = loss(model(X), Y).sum()
-            autograd.backward(l)
+                losses = [loss(model(Xs), Ys) for Xs, Ys in zip(X_list, Y_list)]
+                # l = loss(model(X), Y).sum()
+            autograd.backward(losses)
             optimizer.step(batch_size)
-            l_sum += l.asscalar()
+            l_sum += sum([l.sum().asscalar() for l in losses])
             n += Y.shape[0]
         print(f'epoch {epoch}, loss {l_sum / n}, time {time() - start}, n {n}.')
     
