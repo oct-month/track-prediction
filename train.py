@@ -24,6 +24,15 @@ batch_size = 1200
 num_epochs = 10
 PARAMS_PATH = './params-hybrid.pt'
 
+def save_2D(sources, predicts, p):
+    plt.figure()
+    ax = plt.axes()
+    ax.set_xlabel('lontitude')
+    ax.set_ylabel('latitude')
+    plt.scatter(predicts[0], predicts[1], c='blue')
+    plt.scatter(sources[0], sources[1], c='red')
+    plt.savefig(p)
+
 # batch channel sequeu
 if __name__ == '__main__':
     model = HybridCNNLSTM()
@@ -76,16 +85,12 @@ if __name__ == '__main__':
         LON.append(y[0][1].asscalar() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0])
         LATI.append(y[0][2].asscalar() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0])
         HEI.append(y[0][3].asscalar() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0])
-    
-    fig = plt.figure()
-    ax = plt.axes(projection='3d')
-    ax.set_xlabel('lontitude')
-    ax.set_ylabel('latitude')
-    ax.set_zlabel('height')
-    ax.scatter3D(LON, LATI, HEI, c='blue')
-    ax.scatter3D(
-        Y_test[:, 0].asnumpy() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0],
-        Y_test[:, 1].asnumpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
-        Y_test[:, 2].asnumpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0]
-    )
-    plt.savefig('predict.png')
+
+    predicts = [LON, LATI, HEI]
+    sources = [
+        Y_test[:, 1].asnumpy() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0],
+        Y_test[:, 2].asnumpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
+        Y_test[:, 3].asnumpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0],
+    ]
+
+    save_2D(sources, predicts, 'predict.png')
