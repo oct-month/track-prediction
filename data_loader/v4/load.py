@@ -46,6 +46,7 @@ def data_iter_order(batch_size, ctx=None):
 
 
 def data_iter_pre(batch_size):
+    idx = 1
     X = []
     Y = []
     for pp in os.listdir(DATA_PRE_DIR):
@@ -59,13 +60,14 @@ def data_iter_pre(batch_size):
                 label = df.loc[jx+6, LABEL_COLUMNS]
                 X.append(feature.to_numpy().tolist())
                 Y.append(label.to_numpy().tolist())
-            with open(os.path.join(DATA_AFTER_DIR, 'f' + str(1000000000000 + i) + '.pt'), 'wb') as f:
+            with open(os.path.join(DATA_AFTER_DIR, 'f' + str(1000000000000 + idx) + '.pt'), 'wb') as f:
                 pickle.dump(X, f)
-            with open(os.path.join(DATA_AFTER_DIR, 'l' + str(1000000000000 + i) + '.pt'), 'wb') as f:
+            with open(os.path.join(DATA_AFTER_DIR, 'l' + str(1000000000000 + idx) + '.pt'), 'wb') as f:
                 pickle.dump(Y, f)
             X.clear()
             Y.clear()
-            print(i, end=' ')
+            idx += 1
+            print(idx, end=' ')
 
 
 def data_iter_load(ctx=None):
