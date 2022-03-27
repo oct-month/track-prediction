@@ -1,11 +1,8 @@
 import pandas as pd
 import os
 
-DATA_PRE_DIR = './datasets/radar'
-DATA_AFTER_DIR = './datasets/cache'
-TRACK_MIN_POINT_NUM = 50                # 一条航迹最少应有50航迹点
+from config import DATA_DIR_1 as DATA_PRE_DIR, DATA_DIR_2 as DATA_AFTER_DIR, TRACK_MIN_POINT_NUM, FEATURES_COLUMNS
 
-FEATURES_COLUMNS = ['时间', '航班号', '经度', '纬度', '速度', '高度', '航向']
 
 def convert_empty_str(value: pd.Series, **extra):
     return value.map(lambda x: x.strip() if isinstance(x, str) else x)

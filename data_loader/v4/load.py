@@ -3,13 +3,10 @@ import pickle
 import pandas as pd
 from mxnet import nd
 
-DATA_DIR = './datasets/train'
-DATA_PRE_DIR = './datasets/train'
-DATA_AFTER_DIR = './datasets/load'
-BASE_INDEX_FILE = 1000000000000
+from config import DATA_DIR_3 as DATA_PRE_DIR, DATA_DIR_4 as DATA_AFTER_DIR, FEATURES_COLUMNS, LABEL_COLUMNS
 
-FEATURES_COLUMNS = ['时间', '经度', '纬度', '速度', '高度', '航向']
-LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
+DATA_DIR = DATA_PRE_DIR
+BASE_INDEX_FILE = 1000000000000
 
 
 def data_iter(batch_size, ctx=None):
@@ -68,6 +65,8 @@ def data_iter_pre(batch_size):
                 pickle.dump(Y, f)
             X.clear()
             Y.clear()
+            print(i, end=' ')
+
 
 def data_iter_load(ctx=None):
     for pp in os.listdir(DATA_AFTER_DIR):

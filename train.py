@@ -7,22 +7,11 @@ from mxnet.util import get_gpu_count
 
 from model import HybridCNNLSTM, loss
 from data_loader import data_iter_load
+from config import PARAMS_PATH, batch_size, num_epochs
 
-LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
-LABEL_NORMALIZATION = [
-    [1000000000, 4000000000],
-    [-180, 180],
-    [-90, 90],
-    [-10000, 20000]
-]
-LABEL_NORMALIZATION_TIMES = 100
 
 gpu_counts = get_gpu_count()
 devices = [gpu(i) for i in range(gpu_counts)] if gpu_counts > 0 else [cpu()]
-
-batch_size = 1200
-num_epochs = 100
-PARAMS_PATH = './params-hybrid.pt'
 
 
 # batch channel sequeu

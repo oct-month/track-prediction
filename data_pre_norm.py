@@ -3,42 +3,29 @@ from datetime import datetime
 import pandas as pd
 import os
 
-DATA_PRE_DIR = './datasets/cache'
-DATA_AFTER_DIR = './datasets/train'
-
-FEATURES_COLUMNS = ['时间', '经度', '纬度', '速度', '高度', '航向']
-LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
-FEATURES_NORMALIZATION = [
-    [1000000000, 4000000000],
-    [-180, 180],
-    [-90, 90],
-    [0, 5000],
-    [-10000, 20000],
-    [0, 360]
-]
-FEATURES_NORMALIZATION_TIMES = 100
+from config import DATA_DIR_2 as DATA_PRE_DIR, DATA_DIR_3 as DATA_AFTER_DIR, FEATURES_COLUMNS, FEATURES_NORMALIZATION, NORMALIZATION_TIMES
 
 
 def convert_datetime_numric(value: datetime, **extra):
     return value.timestamp()
 
 def datetime_normalization(value: float, **extra):
-    return FEATURES_NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[0][0]) / (FEATURES_NORMALIZATION[0][1] - FEATURES_NORMALIZATION[0][0])
+    return NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[0][0]) / (FEATURES_NORMALIZATION[0][1] - FEATURES_NORMALIZATION[0][0])
 
 def longitude_normalization(value: float, **extra):
-    return FEATURES_NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[1][0]) / (FEATURES_NORMALIZATION[1][1] - FEATURES_NORMALIZATION[1][0])
+    return NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[1][0]) / (FEATURES_NORMALIZATION[1][1] - FEATURES_NORMALIZATION[1][0])
 
 def latitude_normalization(value: float, **extra):
-    return FEATURES_NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[2][0]) / (FEATURES_NORMALIZATION[2][1] - FEATURES_NORMALIZATION[2][0])
+    return NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[2][0]) / (FEATURES_NORMALIZATION[2][1] - FEATURES_NORMALIZATION[2][0])
 
 def speed_normalization(value: float, **extra):
-    return FEATURES_NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[3][0]) / (FEATURES_NORMALIZATION[3][1] - FEATURES_NORMALIZATION[3][0])
+    return NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[3][0]) / (FEATURES_NORMALIZATION[3][1] - FEATURES_NORMALIZATION[3][0])
 
 def height_normalization(value: float, **extra):
-    return FEATURES_NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[4][0]) / (FEATURES_NORMALIZATION[4][1] - FEATURES_NORMALIZATION[4][0])
+    return NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[4][0]) / (FEATURES_NORMALIZATION[4][1] - FEATURES_NORMALIZATION[4][0])
 
 def course_normalization(value: float, **extra):
-    return FEATURES_NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[5][0]) / (FEATURES_NORMALIZATION[5][1] - FEATURES_NORMALIZATION[5][0])
+    return NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[5][0]) / (FEATURES_NORMALIZATION[5][1] - FEATURES_NORMALIZATION[5][0])
 
 
 if __name__ == '__main__':
@@ -60,4 +47,3 @@ if __name__ == '__main__':
         # for i in range(df.shape[0] - 6 - 1 + 1):
         #     features = df.loc[i:i+6, FEATURES_COLUMNS]
         #     label = df.loc[i+7, LABEL_COLUMNS]
-
