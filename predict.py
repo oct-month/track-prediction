@@ -44,6 +44,16 @@ def show_2D(sources, predicts, steps=0):
     plt.show()
 
 
+def save_2D(sources, predicts, p, steps=0):
+    plt.figure()
+    ax = plt.axes()
+    ax.set_xlabel('lontitude')
+    ax.set_ylabel('latitude')
+    plt.scatter(predicts[0][steps:], predicts[1][steps:], c='blue')
+    plt.scatter(sources[0][steps:], sources[1][steps:], c='red')
+    plt.savefig(p)
+
+
 # batch channel sequeu
 if __name__ == '__main__':
     model = HybridCNNLSTM()

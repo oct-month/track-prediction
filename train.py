@@ -1,9 +1,9 @@
 from time import time
 from mxnet import autograd, gpu, cpu
+from mxnet.optimizer import Adam
 from mxnet.gluon import Trainer
 from mxnet.gluon.utils import split_and_load
 from mxnet.util import get_gpu_count
-import matplotlib.pyplot as plt
 
 from model import HybridCNNLSTM, loss
 from data_loader import data_iter
@@ -20,18 +20,10 @@ LABEL_NORMALIZATION_TIMES = 100
 gpu_counts = get_gpu_count()
 devices = [gpu(i) for i in range(gpu_counts)] if gpu_counts > 0 else [cpu()]
 
-batch_size = 600
+batch_size = 1200
 num_epochs = 10
 PARAMS_PATH = './params-hybrid.pt'
 
-def save_2D(sources, predicts, p):
-    plt.figure()
-    ax = plt.axes()
-    ax.set_xlabel('lontitude')
-    ax.set_ylabel('latitude')
-    plt.scatter(predicts[0], predicts[1], c='blue')
-    plt.scatter(sources[0], sources[1], c='red')
-    plt.savefig(p)
 
 # batch channel sequeu
 if __name__ == '__main__':
@@ -39,7 +31,7 @@ if __name__ == '__main__':
     model.initialize(ctx=devices)
     states = model.begin_state(batch_size, devices)
 
-    optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': 0.0001})
+    optimizer = Trainer(model.collect_params(), Adam())
 
     # 载入训练数据集
     datasets = []
@@ -75,22 +67,3 @@ if __name__ == '__main__':
         # 输出
         print(f'loss {l_sum / n}, time {time() - start}, n {n}, test loss {l_test}.')
     model.save_parameters(PARAMS_PATH)
-
-    # predict
-    LON, LATI, HEI = [], [], []
-    state = model.begin_state(1, devices[:1])[0]
-    for i in range(X_test.shape[0]):
-        y, state = model(X_test[i].reshape(1, 6, 6), state)
-        # TI.append(y[0][0].asscalar())
-        LON.append(y[0][1].asscalar() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0])
-        LATI.append(y[0][2].asscalar() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0])
-        HEI.append(y[0][3].asscalar() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0])
-
-    predicts = [LON, LATI, HEI]
-    sources = [
-        Y_test[:, 1].asnumpy() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0],
-        Y_test[:, 2].asnumpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
-        Y_test[:, 3].asnumpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0],
-    ]
-
-    save_2D(sources, predicts, 'predict.png')

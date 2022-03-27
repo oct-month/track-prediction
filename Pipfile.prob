@@ -8,9 +8,6 @@ thrift = "*"
 mxnet = "*"
 
 [dev-packages]
-mypy = "*"
-autopep8 = "*"
-ipykernel = "*"
 
 [requires]
 python_version = "3.6"
