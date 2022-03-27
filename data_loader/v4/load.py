@@ -1,8 +1,12 @@
 import os
+import pickle
 import pandas as pd
 from mxnet import nd
 
 DATA_DIR = './datasets/train'
+DATA_PRE_DIR = './datasets/train'
+DATA_AFTER_DIR = './datasets/load'
+BASE_INDEX_FILE = 1000000000000
 
 FEATURES_COLUMNS = ['时间', '经度', '纬度', '速度', '高度', '航向']
 LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
@@ -43,3 +47,35 @@ def data_iter_order(batch_size, ctx=None):
                 X.clear()
                 Y.clear()
 
+
+def data_iter_pre(batch_size):
+    X = []
+    Y = []
+    for pp in os.listdir(DATA_PRE_DIR):
+        p = os.path.join(DATA_PRE_DIR, pp)
+        df = pd.read_csv(p, sep=',')
+        batch_length = (df.shape[0] - 7 + 1) // batch_size
+        for i in range(batch_length):
+            for j in range(batch_size):
+                jx = i + j * batch_length
+                feature = df.loc[jx:jx+5, FEATURES_COLUMNS].T
+                label = df.loc[jx+6, LABEL_COLUMNS]
+                X.append(feature.to_numpy().tolist())
+                Y.append(label.to_numpy().tolist())
+            with open(os.path.join(DATA_AFTER_DIR, 'f' + str(1000000000000 + i) + '.pt'), 'wb') as f:
+                pickle.dump(X, f)
+            with open(os.path.join(DATA_AFTER_DIR, 'l' + str(1000000000000 + i) + '.pt'), 'wb') as f:
+                pickle.dump(Y, f)
+            X.clear()
+            Y.clear()
+
+def data_iter_load(ctx=None):
+    for pp in os.listdir(DATA_AFTER_DIR):
+        px = os.path.join(DATA_AFTER_DIR, pp)
+        if pp.startswith('f'):
+            py = os.path.join(DATA_AFTER_DIR, 'l' + pp[1:])
+            with open(px, 'rb') as f:
+                X = nd.array(pickle.load(f), ctx=ctx)
+            with open(py, 'rb') as f:
+                Y = nd.array(pickle.load(f), ctx=ctx)
+            yield X, Y

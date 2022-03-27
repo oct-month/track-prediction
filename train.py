@@ -6,7 +6,7 @@ from mxnet.gluon.utils import split_and_load
 from mxnet.util import get_gpu_count
 
 from model import HybridCNNLSTM, loss
-from data_loader import data_iter
+from data_loader import data_iter_load
 
 LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
 LABEL_NORMALIZATION = [
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     # 载入训练数据集
     datasets = []
-    for X, Y in data_iter(batch_size):
+    for X, Y in data_iter_load():
         X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
         Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
         datasets.append((X_list, Y_list))
