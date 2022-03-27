@@ -10,5 +10,6 @@ test/
 Pipfile.lock
 
 # *.pt
+*.log
 
 win7/

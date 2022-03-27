@@ -66,8 +66,8 @@ def data_iter_pre(batch_size):
                 pickle.dump(Y, f)
             X.clear()
             Y.clear()
-            idx += 1
             print(idx, end=' ')
+            idx += 1
 
 
 def data_iter_load(ctx=None):

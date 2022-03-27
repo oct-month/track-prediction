@@ -73,4 +73,5 @@ for i, pn in enumerate(pnames):
         # 保存csv
         if dt.shape[0] >= TRACK_MIN_POINT_NUM:
             file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + str(i) + '.csv')
-            dt.to_csv(file_name, index=True, encoding='UTF-8')
+            # 稀疏数据集
+            dt.loc[::2].to_csv(file_name, index=True, encoding='UTF-8')
