@@ -20,7 +20,7 @@ LABEL_NORMALIZATION_TIMES = 100
 gpu_counts = get_gpu_count()
 devices = [gpu(i) for i in range(gpu_counts)] if gpu_counts > 0 else [cpu()]
 
-batch_size = 1200
+batch_size = 600
 num_epochs = 10
 PARAMS_PATH = './params-hybrid.pt'
 

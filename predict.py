@@ -3,7 +3,7 @@ from mxnet.util import get_gpu_count
 import matplotlib.pyplot as plt
 
 from model import HybridCNNLSTM
-from data_loader import data_iter
+from data_loader import data_iter_order
 
 
 LABEL_COLUMNS = ['时间', '经度', '纬度', '高度']
@@ -23,24 +23,24 @@ num_epochs = 10
 PARAMS_PATH = './params-hybrid.pt'
 
 
-def show_3D(sources, predicts):
+def show_3D(sources, predicts, steps=0):
     plt.figure()
     ax = plt.axes(projection='3d')
     ax.set_xlabel('lontitude')
     ax.set_ylabel('latitude')
     ax.set_zlabel('height')
-    ax.scatter3D(predicts[0], predicts[1], predicts[2], c='blue')
-    ax.scatter3D(sources[0], sources[1], sources[2], c='red')
+    ax.scatter3D(predicts[0][steps:], predicts[1][steps:], predicts[2][steps:], c='blue')
+    ax.scatter3D(sources[0][steps:], sources[1][steps:], sources[2][steps:], c='red')
     plt.show()
 
 
-def show_2D(sources, predicts):
+def show_2D(sources, predicts, steps=0):
     plt.figure()
     ax = plt.axes()
     ax.set_xlabel('lontitude')
     ax.set_ylabel('latitude')
-    plt.scatter(predicts[0], predicts[1], c='blue')
-    plt.scatter(sources[0], sources[1], c='red')
+    plt.scatter(predicts[0][steps:], predicts[1][steps:], c='blue')
+    plt.scatter(sources[0][steps:], sources[1][steps:], c='red')
     plt.show()
 
 
@@ -50,10 +50,13 @@ if __name__ == '__main__':
     model.load_parameters(PARAMS_PATH, ctx=devices)
 
     # 载入数据集
-    for X, Y in data_iter(batch_size):
-        X_test: nd.NDArray = X.copyto(devices[0])
-        Y_test: nd.NDArray = Y.copyto(devices[0])
-        break
+    num_times = 5
+    for X, Y in data_iter_order(batch_size):
+        num_times -= 1
+        X_test = X.copyto(devices[0])
+        Y_test = Y.copyto(devices[0])
+        if num_times == 0:
+            break
 
     # predict
     LON, LATI, HEI = [], [], []
@@ -72,4 +75,4 @@ if __name__ == '__main__':
         Y_test[:, 3].asnumpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / LABEL_NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0],
     ]
 
-    show_2D(sources, predicts)
+    show_2D(sources, predicts, 100)

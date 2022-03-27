@@ -26,5 +26,20 @@ def data_iter(batch_size, ctx=None):
             X.clear()
             Y.clear()
 
-# def data_iter_static(batch_size, ctx=None):
-#     data_iter(batch_size, ctx)
+
+def data_iter_order(batch_size, ctx=None):
+    X = []
+    Y = []
+    for pp in os.listdir(DATA_DIR):
+        p = os.path.join(DATA_DIR, pp)
+        df = pd.read_csv(p, sep=',')
+        for i in range(df.shape[0] - 6):
+            features = df.loc[i:i+5, FEATURES_COLUMNS].T
+            label = df.loc[i+6, LABEL_COLUMNS]
+            X.append(features.to_numpy().tolist())
+            Y.append(label.to_numpy().tolist())
+            if len(X) >= batch_size:
+                yield nd.array(X, ctx=ctx), nd.array(Y, ctx=ctx)
+                X.clear()
+                Y.clear()
+
