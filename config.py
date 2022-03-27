@@ -28,6 +28,6 @@ NORMALIZATION_TIMES = 100
 
 
 batch_size = 1200
-num_epochs = 100
+num_epochs = 20
 
 PARAMS_PATH = './params-hybrid.pt'
