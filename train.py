@@ -7,7 +7,7 @@ from mxnet.util import get_gpu_count
 
 from model import HybridCNNLSTM, loss
 from data_loader import data_iter_load
-from config import PARAMS_PATH, batch_size, num_epochs
+from config import PARAMS_PATH, batch_size, num_epochs, lr
 
 
 gpu_counts = get_gpu_count()
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     states = model.begin_state(batch_size, devices)
 
     # print(model.collect_params())
-    optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': 1000})
+    optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': lr})
 
     # 载入训练数据集
     datasets = []
