@@ -1,26 +1,41 @@
 import os
 
-EXCLUDE = [
+EXCLUDE_DIR = [
     '.git',
     '.venv',
     '.mypy_cache',
     '__pycache__',
+    '.img',
+    '.vscode',
+    'datasets',
+    'radardata'
+]
+
+EXCLUDE_FILE = [
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.pt',
+    '.params',
+    '.dll',
+    '.xlsx',
+    '.csv'
 ]
 
 result = 0
 
 def go(path: str) -> None:
     global result
-    print(path)
-    for e in EXCLUDE:
+    for e in EXCLUDE_DIR:
         if e in path:
             return
+    print(path)
     for p in os.listdir(path):
         t = os.path.join(path, p)
         if os.path.isdir(t):
             go(t)
         elif os.path.isfile(t):
-            if t.endswith('.py'):
+            if os.path.splitext(t)[-1] not in EXCLUDE_FILE:
                 try:
                     with open(t, 'r', encoding='UTF-8') as f:
                         for l in f.readlines():
@@ -28,7 +43,7 @@ def go(path: str) -> None:
                                 result += 1
                         # result += len(f.readlines())
                 except Exception:
-                    pass
+                    print('Error: ', t)
 
 
 if __name__ == '__main__':
