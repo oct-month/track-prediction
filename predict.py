@@ -1,5 +1,6 @@
 from mxnet import gpu, cpu
 from mxnet.util import get_gpu_count
+import numpy as np
 import matplotlib.pyplot as plt
 
 from model import HybridCNNLSTM
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     model.load_parameters(PARAMS_PATH, ctx=devices)
 
     # 载入数据集
-    num_times = 2
+    num_times = 3
     for X, Y in data_iter_order(batch_size):
         num_times -= 1
         X_test = X.copyto(devices[0])
@@ -71,11 +72,23 @@ if __name__ == '__main__':
         LATI.append(y[0][2].asscalar() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0])
         HEI.append(y[0][3].asscalar() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0])
     
-    predicts = [LON, LATI, HEI]
+    predicts = [
+        np.array(LON),
+        np.array(LATI),
+        np.array(HEI)
+    ]
     sources = [
         Y_test[:, 1].asnumpy() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0],
         Y_test[:, 2].asnumpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
         Y_test[:, 3].asnumpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0]
     ]
+
+    # c = len(sources[0]) // 3
+    # b1 = sources[0][c] - predicts[0][c]
+    # b2 = sources[1][c] - predicts[1][c]
+    # b3 = sources[2][c] - predicts[2][c]
+    # predicts[0] += b1
+    # predicts[1] += b2
+    # predicts[2] += b3
 
     show_2D(sources, predicts, 100)

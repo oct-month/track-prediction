@@ -1,6 +1,7 @@
 import os
 from time import time
 from mxnet import autograd, init, gpu, cpu
+from mxnet.optimizer import SGLD
 from mxnet.gluon import Trainer
 from mxnet.gluon.utils import split_and_load
 from mxnet.util import get_gpu_count
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     states = model.begin_state(batch_size, devices)
 
     # print(model.collect_params())
-    optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': lr})
+    optimizer = Trainer(model.collect_params(), SGLD())
 
     # 载入训练数据集
     datasets = []
