@@ -1,6 +1,25 @@
 from mxnet import cpu
 from mxnet.gluon import nn, rnn, loss as gloss
 
+
+# class Linear(nn.Block):
+#     def __init__(self, units, prefix=None, params=None):
+#         super().__init__(prefix, params)
+#         self.W = Parameter('linear0_weight', shape=(1, units), dtype='float32')
+#         self.B = Parameter('linear0_bias', shape=(1, units), dtype='float32')
+    
+#     def forward(self, X):
+#         return X * self.W.data() + self.B.data()
+    
+#     def collect_params(self, select=None):
+#         p = super().collect_params(select)
+#         p.update({
+#             self.W.name: self.W,
+#             self.B.name: self.B
+#         })
+#         return p
+
+
 class HybridCNNLSTM(nn.Block):
     def __init__(self, prefix=None, params=None):
         super().__init__(prefix, params)

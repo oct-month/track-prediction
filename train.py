@@ -1,6 +1,6 @@
 import os
 from time import time
-from mxnet import autograd, gpu, cpu
+from mxnet import autograd, gpu, cpu, init
 from mxnet.optimizer import SGD
 from mxnet.gluon import Trainer
 from mxnet.gluon.utils import split_and_load
@@ -8,7 +8,7 @@ from mxnet.util import get_gpu_count
 
 from model import HybridCNNLSTM, loss
 from data_loader import data_iter_load
-from config import PARAMS_PATH, batch_size, num_epochs, num_epochs_dense
+from config import PARAMS_PATH, batch_size, num_epochs
 
 
 gpu_counts = get_gpu_count()
@@ -22,11 +22,11 @@ if __name__ == '__main__':
         model.load_parameters(PARAMS_PATH, ctx=devices)
         print('Warning: Using the existing params to train.')
     else:
-        model.initialize(ctx=devices)
+        model.initialize(init=init.Normal(sigma=0.5), ctx=devices)
     states = model.begin_state(batch_size, devices)
 
+    print(model.collect_params())
     optimizer = Trainer(model.collect_params(), SGD())
-    optimizer_dense = Trainer(model.dense_net.collect_params(), SGD())
 
     # 载入训练数据集
     datasets = []
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     Y_test = Y.copyto(devices[0])
 
     # 训练
-    for epoch in range(1, num_epochs + num_epochs_dense + 1):
+    for epoch in range(1, num_epochs + 1):
         print(f'epoch {epoch}, ', end='')
         l_sum, n, start = 0.0, 0, time()
 
@@ -52,10 +52,7 @@ if __name__ == '__main__':
                     l = loss(y, Ys)
                     losses.append(l)
             autograd.backward(losses)
-            if epoch <= num_epochs:
-                optimizer.step(batch_size)
-            else:
-                optimizer_dense.step(batch_size)
+            optimizer.step(batch_size)
             l_sum += sum([l.sum().asscalar() for l in losses])
             n += batch_size
         # 测试
