@@ -20,7 +20,7 @@ def get_latitude(value: str, **extra):
     return float(value.split(',')[1])
 
 
-if __name__ == '__main__':
+def main():
     for idx, pp in enumerate(os.listdir(DATA_PRE_DIR)):
         p = os.path.join(DATA_PRE_DIR, pp)
         df: pd.DataFrame = pd.read_table(p, sep='\t', encoding='UTF-8')
@@ -76,3 +76,7 @@ if __name__ == '__main__':
                     file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + str(idx) + '.csv')
                     # 稀疏数据集
                     dt.loc[::2].to_csv(file_name, index=True, encoding='UTF-8')
+    print('data pre icao done.')
+
+if __name__ == '__main__':
+    main()

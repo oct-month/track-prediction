@@ -28,7 +28,7 @@ def course_normalization(value: float, **extra):
     return NORMALIZATION_TIMES * (value - FEATURES_NORMALIZATION[5][0]) / (FEATURES_NORMALIZATION[5][1] - FEATURES_NORMALIZATION[5][0])
 
 
-if __name__ == '__main__':
+def main():
     for pp in os.listdir(DATA_PRE_DIR):
         p = os.path.join(DATA_PRE_DIR, pp)
         df = pd.read_csv(p, sep=',')
@@ -47,3 +47,7 @@ if __name__ == '__main__':
         # for i in range(df.shape[0] - 6 - 1 + 1):
         #     features = df.loc[i:i+6, FEATURES_COLUMNS]
         #     label = df.loc[i+7, LABEL_COLUMNS]
+    print('data pre norm done.')
+
+if __name__ == '__main__':
+    main()

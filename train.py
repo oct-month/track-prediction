@@ -1,6 +1,6 @@
 from time import time
 from mxnet import autograd, gpu, cpu
-from mxnet.optimizer import SGLD
+from mxnet.optimizer import SGD
 from mxnet.gluon import Trainer
 from mxnet.gluon.utils import split_and_load
 from mxnet.util import get_gpu_count
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     model.initialize(ctx=devices)
     states = model.begin_state(batch_size, devices)
 
-    optimizer = Trainer(model.collect_params(), SGLD())
+    optimizer = Trainer(model.collect_params(), SGD())
 
     # 载入训练数据集
     datasets = []
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     Y_test = Y.copyto(devices[0])
 
     # 训练
-    for epoch in range(1, num_epochs):
+    for epoch in range(1, num_epochs + 1):
         print(f'epoch {epoch}, ', end='')
         l_sum, n, start = 0.0, 0, time()
 

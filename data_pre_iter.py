@@ -2,6 +2,10 @@ from data_loader import data_iter_pre
 from config import batch_size
 
 
-if __name__ == '__main__':
+def main():
     data_iter_pre(batch_size)
-    print('done')
+    print('data iter pre done.')
+
+
+if __name__ == '__main__':
+    main()
