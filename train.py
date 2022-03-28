@@ -1,3 +1,4 @@
+import os
 from time import time
 from mxnet import autograd, gpu, cpu
 from mxnet.optimizer import SGD
@@ -17,7 +18,11 @@ devices = [gpu(i) for i in range(gpu_counts)] if gpu_counts > 0 else [cpu()]
 # batch channel sequeu
 if __name__ == '__main__':
     model = HybridCNNLSTM()
-    model.initialize(ctx=devices)
+    if os.path.isfile(PARAMS_PATH):
+        model.load_parameters(PARAMS_PATH, ctx=devices)
+        print('Warning: Using the existing params to train.')
+    else:
+        model.initialize(ctx=devices)
     states = model.begin_state(batch_size, devices)
 
     optimizer = Trainer(model.collect_params(), SGD())
