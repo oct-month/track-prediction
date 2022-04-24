@@ -1,11 +1,12 @@
 service intelligence {
-    double forecast_xy(1:string fn, 2:double x, 3:double y, 4:double h, 5:double v, 6:double course, 7:double dx, 8:double dy);
-    double forecast_ll(1:string fn, 2:double longi, 3:double lati, 4:double h, 5:double v, 6:double course, 7:double dlongi, 8:double dlati);
+    double forecast_xy(1:string fn, 2:double t, 3:double x, 4:double y, 5:double h, 6:double v, 7:double course, 8:double dx, 9:double dy);
+    double forecast_ll(1:string fn, 2:double t, 3:double longi, 4:double lati, 5:double h, 6:double v, 7:double course, 8:double dlongi, 9:double dlati);
 }
 
 // @Return 需要的时间（秒）
 
 // fn 航班号
+// t 时间戳
 // x y 坐标
 // longi lati 经纬度
 // dx dy 目标坐标

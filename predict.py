@@ -31,8 +31,10 @@ def show_2D(sources, predicts, steps=0):
     ax = plt.axes()
     ax.set_xlabel('lontitude')
     ax.set_ylabel('latitude')
-    plt.scatter(predicts[0][steps:], predicts[1][steps:], c='blue', label='预测')
-    plt.scatter(sources[0][steps:], sources[1][steps:], c='red', label='真实')
+    plt.plot(predicts[0][steps:], predicts[1][steps:], c='blue', label='预测')
+    plt.scatter(predicts[0][-1:], predicts[1][-1:], c='black')
+    plt.plot(sources[0][steps:], sources[1][steps:], c='red', label='真实')
+    plt.scatter(sources[0][-1:], sources[1][-1:], c='black')
     plt.legend()
     plt.show()
 
@@ -54,7 +56,7 @@ if __name__ == '__main__':
     model.load_parameters(PARAMS_PATH, ctx=devices)
 
     # 载入数据集
-    num_times = 3
+    num_times = 6
     for X, Y in data_iter_order(batch_size):
         num_times -= 1
         X_test = X.copyto(devices[0])

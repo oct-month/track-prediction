@@ -41,6 +41,7 @@ def go(path: str) -> None:
                         for l in f.readlines():
                             if l.strip() != '':
                                 result += 1
+                    print('Info: ', t)
                         # result += len(f.readlines())
                 except Exception:
                     print('Error: ', t)

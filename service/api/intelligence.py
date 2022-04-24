@@ -19,10 +19,11 @@ all_structs = []
 
 
 class Iface(object):
-    def forecast_xy(self, fn, x, y, h, v, course, dx, dy):
+    def forecast_xy(self, fn, t, x, y, h, v, course, dx, dy):
         """
         Parameters:
          - fn
+         - t
          - x
          - y
          - h
@@ -34,10 +35,11 @@ class Iface(object):
         """
         pass
 
-    def forecast_ll(self, fn, longi, lati, h, v, course, dlongi, dlati):
+    def forecast_ll(self, fn, t, longi, lati, h, v, course, dlongi, dlati):
         """
         Parameters:
          - fn
+         - t
          - longi
          - lati
          - h
@@ -57,10 +59,11 @@ class Client(Iface):
             self._oprot = oprot
         self._seqid = 0
 
-    def forecast_xy(self, fn, x, y, h, v, course, dx, dy):
+    def forecast_xy(self, fn, t, x, y, h, v, course, dx, dy):
         """
         Parameters:
          - fn
+         - t
          - x
          - y
          - h
@@ -70,13 +73,14 @@ class Client(Iface):
          - dy
 
         """
-        self.send_forecast_xy(fn, x, y, h, v, course, dx, dy)
+        self.send_forecast_xy(fn, t, x, y, h, v, course, dx, dy)
         return self.recv_forecast_xy()
 
-    def send_forecast_xy(self, fn, x, y, h, v, course, dx, dy):
+    def send_forecast_xy(self, fn, t, x, y, h, v, course, dx, dy):
         self._oprot.writeMessageBegin('forecast_xy', TMessageType.CALL, self._seqid)
         args = forecast_xy_args()
         args.fn = fn
+        args.t = t
         args.x = x
         args.y = y
         args.h = h
@@ -103,10 +107,11 @@ class Client(Iface):
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "forecast_xy failed: unknown result")
 
-    def forecast_ll(self, fn, longi, lati, h, v, course, dlongi, dlati):
+    def forecast_ll(self, fn, t, longi, lati, h, v, course, dlongi, dlati):
         """
         Parameters:
          - fn
+         - t
          - longi
          - lati
          - h
@@ -116,13 +121,14 @@ class Client(Iface):
          - dlati
 
         """
-        self.send_forecast_ll(fn, longi, lati, h, v, course, dlongi, dlati)
+        self.send_forecast_ll(fn, t, longi, lati, h, v, course, dlongi, dlati)
         return self.recv_forecast_ll()
 
-    def send_forecast_ll(self, fn, longi, lati, h, v, course, dlongi, dlati):
+    def send_forecast_ll(self, fn, t, longi, lati, h, v, course, dlongi, dlati):
         self._oprot.writeMessageBegin('forecast_ll', TMessageType.CALL, self._seqid)
         args = forecast_ll_args()
         args.fn = fn
+        args.t = t
         args.longi = longi
         args.lati = lati
         args.h = h
@@ -184,7 +190,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = forecast_xy_result()
         try:
-            result.success = self._handler.forecast_xy(args.fn, args.x, args.y, args.h, args.v, args.course, args.dx, args.dy)
+            result.success = self._handler.forecast_xy(args.fn, args.t, args.x, args.y, args.h, args.v, args.course, args.dx, args.dy)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -207,7 +213,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = forecast_ll_result()
         try:
-            result.success = self._handler.forecast_ll(args.fn, args.longi, args.lati, args.h, args.v, args.course, args.dlongi, args.dlati)
+            result.success = self._handler.forecast_ll(args.fn, args.t, args.longi, args.lati, args.h, args.v, args.course, args.dlongi, args.dlati)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -231,6 +237,7 @@ class forecast_xy_args(object):
     """
     Attributes:
      - fn
+     - t
      - x
      - y
      - h
@@ -242,8 +249,9 @@ class forecast_xy_args(object):
     """
 
 
-    def __init__(self, fn=None, x=None, y=None, h=None, v=None, course=None, dx=None, dy=None,):
+    def __init__(self, fn=None, t=None, x=None, y=None, h=None, v=None, course=None, dx=None, dy=None,):
         self.fn = fn
+        self.t = t
         self.x = x
         self.y = y
         self.h = h
@@ -268,35 +276,40 @@ class forecast_xy_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.DOUBLE:
-                    self.x = iprot.readDouble()
+                    self.t = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.DOUBLE:
-                    self.y = iprot.readDouble()
+                    self.x = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.DOUBLE:
-                    self.h = iprot.readDouble()
+                    self.y = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
                 if ftype == TType.DOUBLE:
-                    self.v = iprot.readDouble()
+                    self.h = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 6:
                 if ftype == TType.DOUBLE:
-                    self.course = iprot.readDouble()
+                    self.v = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 7:
                 if ftype == TType.DOUBLE:
-                    self.dx = iprot.readDouble()
+                    self.course = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 8:
+                if ftype == TType.DOUBLE:
+                    self.dx = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
                 if ftype == TType.DOUBLE:
                     self.dy = iprot.readDouble()
                 else:
@@ -315,32 +328,36 @@ class forecast_xy_args(object):
             oprot.writeFieldBegin('fn', TType.STRING, 1)
             oprot.writeString(self.fn.encode('utf-8') if sys.version_info[0] == 2 else self.fn)
             oprot.writeFieldEnd()
+        if self.t is not None:
+            oprot.writeFieldBegin('t', TType.DOUBLE, 2)
+            oprot.writeDouble(self.t)
+            oprot.writeFieldEnd()
         if self.x is not None:
-            oprot.writeFieldBegin('x', TType.DOUBLE, 2)
+            oprot.writeFieldBegin('x', TType.DOUBLE, 3)
             oprot.writeDouble(self.x)
             oprot.writeFieldEnd()
         if self.y is not None:
-            oprot.writeFieldBegin('y', TType.DOUBLE, 3)
+            oprot.writeFieldBegin('y', TType.DOUBLE, 4)
             oprot.writeDouble(self.y)
             oprot.writeFieldEnd()
         if self.h is not None:
-            oprot.writeFieldBegin('h', TType.DOUBLE, 4)
+            oprot.writeFieldBegin('h', TType.DOUBLE, 5)
             oprot.writeDouble(self.h)
             oprot.writeFieldEnd()
         if self.v is not None:
-            oprot.writeFieldBegin('v', TType.DOUBLE, 5)
+            oprot.writeFieldBegin('v', TType.DOUBLE, 6)
             oprot.writeDouble(self.v)
             oprot.writeFieldEnd()
         if self.course is not None:
-            oprot.writeFieldBegin('course', TType.DOUBLE, 6)
+            oprot.writeFieldBegin('course', TType.DOUBLE, 7)
             oprot.writeDouble(self.course)
             oprot.writeFieldEnd()
         if self.dx is not None:
-            oprot.writeFieldBegin('dx', TType.DOUBLE, 7)
+            oprot.writeFieldBegin('dx', TType.DOUBLE, 8)
             oprot.writeDouble(self.dx)
             oprot.writeFieldEnd()
         if self.dy is not None:
-            oprot.writeFieldBegin('dy', TType.DOUBLE, 8)
+            oprot.writeFieldBegin('dy', TType.DOUBLE, 9)
             oprot.writeDouble(self.dy)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -363,13 +380,14 @@ all_structs.append(forecast_xy_args)
 forecast_xy_args.thrift_spec = (
     None,  # 0
     (1, TType.STRING, 'fn', 'UTF8', None, ),  # 1
-    (2, TType.DOUBLE, 'x', None, None, ),  # 2
-    (3, TType.DOUBLE, 'y', None, None, ),  # 3
-    (4, TType.DOUBLE, 'h', None, None, ),  # 4
-    (5, TType.DOUBLE, 'v', None, None, ),  # 5
-    (6, TType.DOUBLE, 'course', None, None, ),  # 6
-    (7, TType.DOUBLE, 'dx', None, None, ),  # 7
-    (8, TType.DOUBLE, 'dy', None, None, ),  # 8
+    (2, TType.DOUBLE, 't', None, None, ),  # 2
+    (3, TType.DOUBLE, 'x', None, None, ),  # 3
+    (4, TType.DOUBLE, 'y', None, None, ),  # 4
+    (5, TType.DOUBLE, 'h', None, None, ),  # 5
+    (6, TType.DOUBLE, 'v', None, None, ),  # 6
+    (7, TType.DOUBLE, 'course', None, None, ),  # 7
+    (8, TType.DOUBLE, 'dx', None, None, ),  # 8
+    (9, TType.DOUBLE, 'dy', None, None, ),  # 9
 )
 
 
@@ -438,6 +456,7 @@ class forecast_ll_args(object):
     """
     Attributes:
      - fn
+     - t
      - longi
      - lati
      - h
@@ -449,8 +468,9 @@ class forecast_ll_args(object):
     """
 
 
-    def __init__(self, fn=None, longi=None, lati=None, h=None, v=None, course=None, dlongi=None, dlati=None,):
+    def __init__(self, fn=None, t=None, longi=None, lati=None, h=None, v=None, course=None, dlongi=None, dlati=None,):
         self.fn = fn
+        self.t = t
         self.longi = longi
         self.lati = lati
         self.h = h
@@ -475,35 +495,40 @@ class forecast_ll_args(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.DOUBLE:
-                    self.longi = iprot.readDouble()
+                    self.t = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
                 if ftype == TType.DOUBLE:
-                    self.lati = iprot.readDouble()
+                    self.longi = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 4:
                 if ftype == TType.DOUBLE:
-                    self.h = iprot.readDouble()
+                    self.lati = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 5:
                 if ftype == TType.DOUBLE:
-                    self.v = iprot.readDouble()
+                    self.h = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 6:
                 if ftype == TType.DOUBLE:
-                    self.course = iprot.readDouble()
+                    self.v = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 7:
                 if ftype == TType.DOUBLE:
-                    self.dlongi = iprot.readDouble()
+                    self.course = iprot.readDouble()
                 else:
                     iprot.skip(ftype)
             elif fid == 8:
+                if ftype == TType.DOUBLE:
+                    self.dlongi = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
                 if ftype == TType.DOUBLE:
                     self.dlati = iprot.readDouble()
                 else:
@@ -522,32 +547,36 @@ class forecast_ll_args(object):
             oprot.writeFieldBegin('fn', TType.STRING, 1)
             oprot.writeString(self.fn.encode('utf-8') if sys.version_info[0] == 2 else self.fn)
             oprot.writeFieldEnd()
+        if self.t is not None:
+            oprot.writeFieldBegin('t', TType.DOUBLE, 2)
+            oprot.writeDouble(self.t)
+            oprot.writeFieldEnd()
         if self.longi is not None:
-            oprot.writeFieldBegin('longi', TType.DOUBLE, 2)
+            oprot.writeFieldBegin('longi', TType.DOUBLE, 3)
             oprot.writeDouble(self.longi)
             oprot.writeFieldEnd()
         if self.lati is not None:
-            oprot.writeFieldBegin('lati', TType.DOUBLE, 3)
+            oprot.writeFieldBegin('lati', TType.DOUBLE, 4)
             oprot.writeDouble(self.lati)
             oprot.writeFieldEnd()
         if self.h is not None:
-            oprot.writeFieldBegin('h', TType.DOUBLE, 4)
+            oprot.writeFieldBegin('h', TType.DOUBLE, 5)
             oprot.writeDouble(self.h)
             oprot.writeFieldEnd()
         if self.v is not None:
-            oprot.writeFieldBegin('v', TType.DOUBLE, 5)
+            oprot.writeFieldBegin('v', TType.DOUBLE, 6)
             oprot.writeDouble(self.v)
             oprot.writeFieldEnd()
         if self.course is not None:
-            oprot.writeFieldBegin('course', TType.DOUBLE, 6)
+            oprot.writeFieldBegin('course', TType.DOUBLE, 7)
             oprot.writeDouble(self.course)
             oprot.writeFieldEnd()
         if self.dlongi is not None:
-            oprot.writeFieldBegin('dlongi', TType.DOUBLE, 7)
+            oprot.writeFieldBegin('dlongi', TType.DOUBLE, 8)
             oprot.writeDouble(self.dlongi)
             oprot.writeFieldEnd()
         if self.dlati is not None:
-            oprot.writeFieldBegin('dlati', TType.DOUBLE, 8)
+            oprot.writeFieldBegin('dlati', TType.DOUBLE, 9)
             oprot.writeDouble(self.dlati)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -570,13 +599,14 @@ all_structs.append(forecast_ll_args)
 forecast_ll_args.thrift_spec = (
     None,  # 0
     (1, TType.STRING, 'fn', 'UTF8', None, ),  # 1
-    (2, TType.DOUBLE, 'longi', None, None, ),  # 2
-    (3, TType.DOUBLE, 'lati', None, None, ),  # 3
-    (4, TType.DOUBLE, 'h', None, None, ),  # 4
-    (5, TType.DOUBLE, 'v', None, None, ),  # 5
-    (6, TType.DOUBLE, 'course', None, None, ),  # 6
-    (7, TType.DOUBLE, 'dlongi', None, None, ),  # 7
-    (8, TType.DOUBLE, 'dlati', None, None, ),  # 8
+    (2, TType.DOUBLE, 't', None, None, ),  # 2
+    (3, TType.DOUBLE, 'longi', None, None, ),  # 3
+    (4, TType.DOUBLE, 'lati', None, None, ),  # 4
+    (5, TType.DOUBLE, 'h', None, None, ),  # 5
+    (6, TType.DOUBLE, 'v', None, None, ),  # 6
+    (7, TType.DOUBLE, 'course', None, None, ),  # 7
+    (8, TType.DOUBLE, 'dlongi', None, None, ),  # 8
+    (9, TType.DOUBLE, 'dlati', None, None, ),  # 9
 )
 
 

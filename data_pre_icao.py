@@ -62,20 +62,15 @@ def main():
             dt.set_index('时间', inplace=True)
             dt[['经度', '纬度', '速度', '高度', '航向']] = dt.loc[:, ['经度', '纬度', '速度', '高度', '航向']].apply(pd.to_numeric, errors='coerce')
             # 丢弃无用数据
-            flag = True
-            for feature in FEATURES_COLUMNS[2:]:
-                if all(dt[feature].isna()):
-                    flag = False
-                    break
-            if flag:
-                # 插值
-                dt.interpolate(method='time', axis=0, inplace=True)
-                dt.dropna(axis=0, how='any', subset=FEATURES_COLUMNS[2:], inplace=True)
-                # 保存csv
-                if dt.shape[0] >= TRACK_MIN_POINT_NUM:
-                    file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + str(idx) + '.csv')
-                    # 稀疏数据集
-                    dt.loc[::2].to_csv(file_name, index=True, encoding='UTF-8')
+            dt.dropna(axis=0, how='any', inplace=True)
+            # 丢弃重复行
+            dt.drop_duplicates(subset=FEATURES_COLUMNS[1:3], keep='first', inplace=True)
+            # 丢弃离谱数据
+            # TODO
+            # 保存csv
+            if dt.shape[0] >= TRACK_MIN_POINT_NUM:
+                file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + str(idx) + '.csv')
+                dt.to_csv(file_name, index=True, encoding='UTF-8')
     print('data pre icao done.')
 
 if __name__ == '__main__':

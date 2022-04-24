@@ -31,21 +31,21 @@ public class modeluse
         }
     }
 
-    public double forecast_ll(string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
+    public double forecast_ll(string fn, double t, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
     {
         if (!tTransport.IsOpen)
         {
             tTransport.Open();
         }
-        return client.forecast_ll(fn, longi, lati, h, v, course, dlongi, dlati);
+        return client.forecast_ll(fn, t, longi, lati, h, v, course, dlongi, dlati);
     }
 
-    public double forecast_xy(string fn, double x, double y, double h, double v, double course, double dx, double dy)
+    public double forecast_xy(string fn, double t, double x, double y, double h, double v, double course, double dx, double dy)
     {
         if (!tTransport.IsOpen)
         {
             tTransport.Open();
         }
-        return client.forecast_xy(fn, x, y, h, v, course, dx, dy);
+        return client.forecast_xy(fn, t, x, y, h, v, course, dx, dy);
     }
 }

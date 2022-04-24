@@ -17,17 +17,17 @@ using Thrift.Transport;
 
 public partial class intelligence {
   public interface ISync {
-    double forecast_xy(string fn, double x, double y, double h, double v, double course, double dx, double dy);
-    double forecast_ll(string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati);
+    double forecast_xy(string fn, double t, double x, double y, double h, double v, double course, double dx, double dy);
+    double forecast_ll(string fn, double t, double longi, double lati, double h, double v, double course, double dlongi, double dlati);
   }
 
   public interface Iface : ISync {
     #if SILVERLIGHT
-    IAsyncResult Begin_forecast_xy(AsyncCallback callback, object state, string fn, double x, double y, double h, double v, double course, double dx, double dy);
+    IAsyncResult Begin_forecast_xy(AsyncCallback callback, object state, string fn, double t, double x, double y, double h, double v, double course, double dx, double dy);
     double End_forecast_xy(IAsyncResult asyncResult);
     #endif
     #if SILVERLIGHT
-    IAsyncResult Begin_forecast_ll(AsyncCallback callback, object state, string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati);
+    IAsyncResult Begin_forecast_ll(AsyncCallback callback, object state, string fn, double t, double longi, double lati, double h, double v, double course, double dlongi, double dlati);
     double End_forecast_ll(IAsyncResult asyncResult);
     #endif
   }
@@ -91,9 +91,9 @@ public partial class intelligence {
     
     #if SILVERLIGHT
     
-    public IAsyncResult Begin_forecast_xy(AsyncCallback callback, object state, string fn, double x, double y, double h, double v, double course, double dx, double dy)
+    public IAsyncResult Begin_forecast_xy(AsyncCallback callback, object state, string fn, double t, double x, double y, double h, double v, double course, double dx, double dy)
     {
-      return send_forecast_xy(callback, state, fn, x, y, h, v, course, dx, dy);
+      return send_forecast_xy(callback, state, fn, t, x, y, h, v, course, dx, dy);
     }
 
     public double End_forecast_xy(IAsyncResult asyncResult)
@@ -104,24 +104,25 @@ public partial class intelligence {
 
     #endif
 
-    public double forecast_xy(string fn, double x, double y, double h, double v, double course, double dx, double dy)
+    public double forecast_xy(string fn, double t, double x, double y, double h, double v, double course, double dx, double dy)
     {
       #if SILVERLIGHT
-      var asyncResult = Begin_forecast_xy(null, null, fn, x, y, h, v, course, dx, dy);
+      var asyncResult = Begin_forecast_xy(null, null, fn, t, x, y, h, v, course, dx, dy);
       return End_forecast_xy(asyncResult);
 
       #else
-      send_forecast_xy(fn, x, y, h, v, course, dx, dy);
+      send_forecast_xy(fn, t, x, y, h, v, course, dx, dy);
       return recv_forecast_xy();
 
       #endif
     }
     #if SILVERLIGHT
-    public IAsyncResult send_forecast_xy(AsyncCallback callback, object state, string fn, double x, double y, double h, double v, double course, double dx, double dy)
+    public IAsyncResult send_forecast_xy(AsyncCallback callback, object state, string fn, double t, double x, double y, double h, double v, double course, double dx, double dy)
     {
       oprot_.WriteMessageBegin(new TMessage("forecast_xy", TMessageType.Call, seqid_));
       forecast_xy_args args = new forecast_xy_args();
       args.Fn = fn;
+      args.T = t;
       args.X = x;
       args.Y = y;
       args.H = h;
@@ -136,11 +137,12 @@ public partial class intelligence {
 
     #else
 
-    public void send_forecast_xy(string fn, double x, double y, double h, double v, double course, double dx, double dy)
+    public void send_forecast_xy(string fn, double t, double x, double y, double h, double v, double course, double dx, double dy)
     {
       oprot_.WriteMessageBegin(new TMessage("forecast_xy", TMessageType.Call, seqid_));
       forecast_xy_args args = new forecast_xy_args();
       args.Fn = fn;
+      args.T = t;
       args.X = x;
       args.Y = y;
       args.H = h;
@@ -174,9 +176,9 @@ public partial class intelligence {
     
     #if SILVERLIGHT
     
-    public IAsyncResult Begin_forecast_ll(AsyncCallback callback, object state, string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
+    public IAsyncResult Begin_forecast_ll(AsyncCallback callback, object state, string fn, double t, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
     {
-      return send_forecast_ll(callback, state, fn, longi, lati, h, v, course, dlongi, dlati);
+      return send_forecast_ll(callback, state, fn, t, longi, lati, h, v, course, dlongi, dlati);
     }
 
     public double End_forecast_ll(IAsyncResult asyncResult)
@@ -187,24 +189,25 @@ public partial class intelligence {
 
     #endif
 
-    public double forecast_ll(string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
+    public double forecast_ll(string fn, double t, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
     {
       #if SILVERLIGHT
-      var asyncResult = Begin_forecast_ll(null, null, fn, longi, lati, h, v, course, dlongi, dlati);
+      var asyncResult = Begin_forecast_ll(null, null, fn, t, longi, lati, h, v, course, dlongi, dlati);
       return End_forecast_ll(asyncResult);
 
       #else
-      send_forecast_ll(fn, longi, lati, h, v, course, dlongi, dlati);
+      send_forecast_ll(fn, t, longi, lati, h, v, course, dlongi, dlati);
       return recv_forecast_ll();
 
       #endif
     }
     #if SILVERLIGHT
-    public IAsyncResult send_forecast_ll(AsyncCallback callback, object state, string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
+    public IAsyncResult send_forecast_ll(AsyncCallback callback, object state, string fn, double t, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
     {
       oprot_.WriteMessageBegin(new TMessage("forecast_ll", TMessageType.Call, seqid_));
       forecast_ll_args args = new forecast_ll_args();
       args.Fn = fn;
+      args.T = t;
       args.Longi = longi;
       args.Lati = lati;
       args.H = h;
@@ -219,11 +222,12 @@ public partial class intelligence {
 
     #else
 
-    public void send_forecast_ll(string fn, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
+    public void send_forecast_ll(string fn, double t, double longi, double lati, double h, double v, double course, double dlongi, double dlati)
     {
       oprot_.WriteMessageBegin(new TMessage("forecast_ll", TMessageType.Call, seqid_));
       forecast_ll_args args = new forecast_ll_args();
       args.Fn = fn;
+      args.T = t;
       args.Longi = longi;
       args.Lati = lati;
       args.H = h;
@@ -301,7 +305,7 @@ public partial class intelligence {
       forecast_xy_result result = new forecast_xy_result();
       try
       {
-        result.Success = iface_.forecast_xy(args.Fn, args.X, args.Y, args.H, args.V, args.Course, args.Dx, args.Dy);
+        result.Success = iface_.forecast_xy(args.Fn, args.T, args.X, args.Y, args.H, args.V, args.Course, args.Dx, args.Dy);
         oprot.WriteMessageBegin(new TMessage("forecast_xy", TMessageType.Reply, seqid)); 
         result.Write(oprot);
       }
@@ -329,7 +333,7 @@ public partial class intelligence {
       forecast_ll_result result = new forecast_ll_result();
       try
       {
-        result.Success = iface_.forecast_ll(args.Fn, args.Longi, args.Lati, args.H, args.V, args.Course, args.Dlongi, args.Dlati);
+        result.Success = iface_.forecast_ll(args.Fn, args.T, args.Longi, args.Lati, args.H, args.V, args.Course, args.Dlongi, args.Dlati);
         oprot.WriteMessageBegin(new TMessage("forecast_ll", TMessageType.Reply, seqid)); 
         result.Write(oprot);
       }
@@ -358,6 +362,7 @@ public partial class intelligence {
   public partial class forecast_xy_args : TBase
   {
     private string _fn;
+    private double _t;
     private double _x;
     private double _y;
     private double _h;
@@ -376,6 +381,19 @@ public partial class intelligence {
       {
         __isset.fn = true;
         this._fn = value;
+      }
+    }
+
+    public double T
+    {
+      get
+      {
+        return _t;
+      }
+      set
+      {
+        __isset.t = true;
+        this._t = value;
       }
     }
 
@@ -477,6 +495,7 @@ public partial class intelligence {
     #endif
     public struct Isset {
       public bool fn;
+      public bool t;
       public bool x;
       public bool y;
       public bool h;
@@ -513,47 +532,54 @@ public partial class intelligence {
               break;
             case 2:
               if (field.Type == TType.Double) {
-                X = iprot.ReadDouble();
+                T = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 3:
               if (field.Type == TType.Double) {
-                Y = iprot.ReadDouble();
+                X = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 4:
               if (field.Type == TType.Double) {
-                H = iprot.ReadDouble();
+                Y = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 5:
               if (field.Type == TType.Double) {
-                V = iprot.ReadDouble();
+                H = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 6:
               if (field.Type == TType.Double) {
-                Course = iprot.ReadDouble();
+                V = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 7:
               if (field.Type == TType.Double) {
-                Dx = iprot.ReadDouble();
+                Course = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 8:
+              if (field.Type == TType.Double) {
+                Dx = iprot.ReadDouble();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            case 9:
               if (field.Type == TType.Double) {
                 Dy = iprot.ReadDouble();
               } else { 
@@ -589,10 +615,18 @@ public partial class intelligence {
           oprot.WriteString(Fn);
           oprot.WriteFieldEnd();
         }
+        if (__isset.t) {
+          field.Name = "t";
+          field.Type = TType.Double;
+          field.ID = 2;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteDouble(T);
+          oprot.WriteFieldEnd();
+        }
         if (__isset.x) {
           field.Name = "x";
           field.Type = TType.Double;
-          field.ID = 2;
+          field.ID = 3;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(X);
           oprot.WriteFieldEnd();
@@ -600,7 +634,7 @@ public partial class intelligence {
         if (__isset.y) {
           field.Name = "y";
           field.Type = TType.Double;
-          field.ID = 3;
+          field.ID = 4;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Y);
           oprot.WriteFieldEnd();
@@ -608,7 +642,7 @@ public partial class intelligence {
         if (__isset.h) {
           field.Name = "h";
           field.Type = TType.Double;
-          field.ID = 4;
+          field.ID = 5;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(H);
           oprot.WriteFieldEnd();
@@ -616,7 +650,7 @@ public partial class intelligence {
         if (__isset.v) {
           field.Name = "v";
           field.Type = TType.Double;
-          field.ID = 5;
+          field.ID = 6;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(V);
           oprot.WriteFieldEnd();
@@ -624,7 +658,7 @@ public partial class intelligence {
         if (__isset.course) {
           field.Name = "course";
           field.Type = TType.Double;
-          field.ID = 6;
+          field.ID = 7;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Course);
           oprot.WriteFieldEnd();
@@ -632,7 +666,7 @@ public partial class intelligence {
         if (__isset.dx) {
           field.Name = "dx";
           field.Type = TType.Double;
-          field.ID = 7;
+          field.ID = 8;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Dx);
           oprot.WriteFieldEnd();
@@ -640,7 +674,7 @@ public partial class intelligence {
         if (__isset.dy) {
           field.Name = "dy";
           field.Type = TType.Double;
-          field.ID = 8;
+          field.ID = 9;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Dy);
           oprot.WriteFieldEnd();
@@ -662,6 +696,12 @@ public partial class intelligence {
         __first = false;
         __sb.Append("Fn: ");
         __sb.Append(Fn);
+      }
+      if (__isset.t) {
+        if(!__first) { __sb.Append(", "); }
+        __first = false;
+        __sb.Append("T: ");
+        __sb.Append(T);
       }
       if (__isset.x) {
         if(!__first) { __sb.Append(", "); }
@@ -827,6 +867,7 @@ public partial class intelligence {
   public partial class forecast_ll_args : TBase
   {
     private string _fn;
+    private double _t;
     private double _longi;
     private double _lati;
     private double _h;
@@ -845,6 +886,19 @@ public partial class intelligence {
       {
         __isset.fn = true;
         this._fn = value;
+      }
+    }
+
+    public double T
+    {
+      get
+      {
+        return _t;
+      }
+      set
+      {
+        __isset.t = true;
+        this._t = value;
       }
     }
 
@@ -946,6 +1000,7 @@ public partial class intelligence {
     #endif
     public struct Isset {
       public bool fn;
+      public bool t;
       public bool longi;
       public bool lati;
       public bool h;
@@ -982,47 +1037,54 @@ public partial class intelligence {
               break;
             case 2:
               if (field.Type == TType.Double) {
-                Longi = iprot.ReadDouble();
+                T = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 3:
               if (field.Type == TType.Double) {
-                Lati = iprot.ReadDouble();
+                Longi = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 4:
               if (field.Type == TType.Double) {
-                H = iprot.ReadDouble();
+                Lati = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 5:
               if (field.Type == TType.Double) {
-                V = iprot.ReadDouble();
+                H = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 6:
               if (field.Type == TType.Double) {
-                Course = iprot.ReadDouble();
+                V = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 7:
               if (field.Type == TType.Double) {
-                Dlongi = iprot.ReadDouble();
+                Course = iprot.ReadDouble();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
             case 8:
+              if (field.Type == TType.Double) {
+                Dlongi = iprot.ReadDouble();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            case 9:
               if (field.Type == TType.Double) {
                 Dlati = iprot.ReadDouble();
               } else { 
@@ -1058,10 +1120,18 @@ public partial class intelligence {
           oprot.WriteString(Fn);
           oprot.WriteFieldEnd();
         }
+        if (__isset.t) {
+          field.Name = "t";
+          field.Type = TType.Double;
+          field.ID = 2;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteDouble(T);
+          oprot.WriteFieldEnd();
+        }
         if (__isset.longi) {
           field.Name = "longi";
           field.Type = TType.Double;
-          field.ID = 2;
+          field.ID = 3;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Longi);
           oprot.WriteFieldEnd();
@@ -1069,7 +1139,7 @@ public partial class intelligence {
         if (__isset.lati) {
           field.Name = "lati";
           field.Type = TType.Double;
-          field.ID = 3;
+          field.ID = 4;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Lati);
           oprot.WriteFieldEnd();
@@ -1077,7 +1147,7 @@ public partial class intelligence {
         if (__isset.h) {
           field.Name = "h";
           field.Type = TType.Double;
-          field.ID = 4;
+          field.ID = 5;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(H);
           oprot.WriteFieldEnd();
@@ -1085,7 +1155,7 @@ public partial class intelligence {
         if (__isset.v) {
           field.Name = "v";
           field.Type = TType.Double;
-          field.ID = 5;
+          field.ID = 6;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(V);
           oprot.WriteFieldEnd();
@@ -1093,7 +1163,7 @@ public partial class intelligence {
         if (__isset.course) {
           field.Name = "course";
           field.Type = TType.Double;
-          field.ID = 6;
+          field.ID = 7;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Course);
           oprot.WriteFieldEnd();
@@ -1101,7 +1171,7 @@ public partial class intelligence {
         if (__isset.dlongi) {
           field.Name = "dlongi";
           field.Type = TType.Double;
-          field.ID = 7;
+          field.ID = 8;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Dlongi);
           oprot.WriteFieldEnd();
@@ -1109,7 +1179,7 @@ public partial class intelligence {
         if (__isset.dlati) {
           field.Name = "dlati";
           field.Type = TType.Double;
-          field.ID = 8;
+          field.ID = 9;
           oprot.WriteFieldBegin(field);
           oprot.WriteDouble(Dlati);
           oprot.WriteFieldEnd();
@@ -1131,6 +1201,12 @@ public partial class intelligence {
         __first = false;
         __sb.Append("Fn: ");
         __sb.Append(Fn);
+      }
+      if (__isset.t) {
+        if(!__first) { __sb.Append(", "); }
+        __first = false;
+        __sb.Append("T: ");
+        __sb.Append(T);
       }
       if (__isset.longi) {
         if(!__first) { __sb.Append(", "); }
