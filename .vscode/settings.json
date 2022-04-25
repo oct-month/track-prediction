@@ -1,3 +1,6 @@
 {
-    "files.eol": "\r\n"
+    "files.eol": "\r\n",
+    "[bat]": {
+        "files.encoding": "gbk"
+    }
 }
