@@ -56,7 +56,7 @@ if __name__ == '__main__':
     model.load_parameters(PARAMS_PATH, ctx=devices)
 
     # 载入数据集
-    num_times = 6
+    num_times = 3
     for X, Y in data_iter_order(batch_size):
         num_times -= 1
         X_test = X.copyto(devices[0])

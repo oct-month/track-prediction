@@ -16,7 +16,11 @@ public static class Program
     {
 
         modeluse model = new modeluse();
-        double s = model.forecast_ll("cn", 1, 1, 1, 1, 1, 1, 1, 1);
-        Console.WriteLine(s);
+        for (int i = 0; i < 200; i++)
+        {
+            double s = model.forecast_ll("cn", 1, 1, 1, 1, 1, 1, 1, 1);
+            //Thread.Sleep(1);
+            Console.WriteLine(s);
+        }
     }
 }

@@ -9,7 +9,7 @@ from .handler import IntelligenceHandler
 def get_server(port: int) -> TServer.TSimpleServer:
     handler = IntelligenceHandler()
     processor = Processor(handler)
-    transport = TSocket.TServerSocket('0.0.0.0', port)
+    transport = TSocket.TServerSocket('127.0.0.1', port)
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
     server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
