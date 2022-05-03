@@ -56,7 +56,7 @@ if __name__ == '__main__':
     model.load_parameters(PARAMS_PATH, ctx=devices)
 
     # 载入数据集
-    num_times = 3
+    num_times = 2
     for X, Y in data_iter_order(batch_size):
         num_times -= 1
         X_test = X.copyto(devices[0])
@@ -93,4 +93,4 @@ if __name__ == '__main__':
     # predicts[1] += b2
     # predicts[2] += b3
 
-    show_2D(sources, predicts, 100)
+    show_3D(sources, predicts, 100)

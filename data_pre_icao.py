@@ -67,8 +67,9 @@ def main():
             dt.drop_duplicates(subset=FEATURES_COLUMNS[1:3], keep='first', inplace=True)
             # 丢弃离谱数据
             # TODO
+            # 丢弃平飞数据和过短数据
             # 保存csv
-            if dt.shape[0] >= TRACK_MIN_POINT_NUM:
+            if dt.shape[0] >= TRACK_MIN_POINT_NUM and abs(dt['高度'][-1] - dt['高度'][0]) >= 500:
                 file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + str(idx) + '.csv')
                 dt.to_csv(file_name, index=True, encoding='UTF-8')
     print('data pre icao done.')
