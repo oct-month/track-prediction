@@ -4,6 +4,7 @@ from mxnet import nd, gpu, cpu
 from mxnet.util import get_gpu_count
 
 from model import HybridCNNLSTM, predict
+from logger import logger
 from config import PARAMS_PATH
 
 from .api.intelligence import Iface
@@ -34,6 +35,7 @@ class IntelligenceHandler(Iface):
             return 0
         basics = nd.array(XY_TRACK_POINTS[fn][-6:])
         ends = predict(model, basics)
+        logger.info(f'receive params: ({t}, {x}, {y}, {v}, {h}, {course})')
         return math.sqrt((ends[0] - dx) ** 2 + (ends[1] - dy) ** 2) / v
     
     def forecast_ll(self, fn: str, t: float, longi: float, lati: float, h: float, v: float, course: float, dlongi: float, dlati: float) -> float:
@@ -44,4 +46,5 @@ class IntelligenceHandler(Iface):
             return 0
         basics = nd.array(LL_TRACK_POINTS[fn][-6:])
         ends = predict(model, basics)
+        logger.info(f'receive params: ({t}, {longi}, {lati}, {v}, {h}, {course})')
         return math.sqrt((ends[0] - dlongi) ** 2 + (ends[1] - dlati) ** 2) * TIMES / v

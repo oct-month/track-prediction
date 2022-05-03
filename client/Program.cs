@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Thrift;
-using Thrift.Collections;
-
-using Thrift.Protocol;
-using Thrift.Transport;
-
 
 public static class Program
 {
+    private static Random random = new Random();
+
+    public static double randomDouble()
+    {
+        return random.NextDouble() * 100;
+    }
+
     public static void Main()
     {
-
-        modeluse model = new modeluse();
-        for (int i = 0; i < 200; i++)
+        modeluse model = modeluse.getInstance();
+        for (int i = 0; i < 20000; i++)
         {
-            double s = model.forecast_ll("cn", 1, 1, 1, 1, 1, 1, 1, 1);
-            //Thread.Sleep(1);
+            double s = model.forecast_ll("cn", randomDouble(), randomDouble(), randomDouble(), randomDouble(), randomDouble(), randomDouble(), randomDouble(), randomDouble());
+            Thread.Sleep(10);
             Console.WriteLine(s);
         }
+        Console.ReadKey();
     }
 }
+
