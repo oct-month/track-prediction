@@ -27,8 +27,8 @@ LABEL_NORMALIZATION = [
 NORMALIZATION_TIMES = 100
 
 
-batch_size = 1200
-num_epochs = 20
-lr = 0.01
+batch_size = 120
+num_epochs = 5
+lr = 0.001
 
 PARAMS_PATH = './params-hybrid.pt'

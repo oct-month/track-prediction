@@ -1,5 +1,6 @@
-from mxnet import gpu, cpu
-from mxnet.util import get_gpu_count
+import os
+import torch
+from torch import nn
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -11,9 +12,7 @@ from config import LABEL_NORMALIZATION, NORMALIZATION_TIMES, PARAMS_PATH, batch_
 plt.rcParams['font.sans-serif']=['SimHei']      #用来正常显示中文标签
 plt.rcParams['axes.unicode_minus']=False        #用来正常显示负号
 
-gpu_counts = get_gpu_count()
-devices = [gpu(i) for i in range(gpu_counts)] if gpu_counts > 0 else [cpu()]
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def show_3D(sources, predicts, steps=0):
     plt.figure()
@@ -39,7 +38,7 @@ def show_2D(sources, predicts, steps=0):
     plt.show()
 
 
-def save_2D(sources, predicts, p, steps=0):
+def save_2D(sources, predicts, steps=0, path='predict.png'):
     plt.figure()
     ax = plt.axes()
     ax.set_xlabel('lontitude')
@@ -47,32 +46,39 @@ def save_2D(sources, predicts, p, steps=0):
     plt.scatter(predicts[0][steps:], predicts[1][steps:], c='blue', label='预测')
     plt.scatter(sources[0][steps:], sources[1][steps:], c='red', label='真实')
     plt.legend()
-    plt.savefig(p)
+    plt.savefig(path)
 
 
 # batch channel sequeu
 if __name__ == '__main__':
     model = HybridCNNLSTM()
-    model.load_parameters(PARAMS_PATH, ctx=devices)
+    if os.path.isfile(PARAMS_PATH):
+        model.load_state_dict(torch.load(PARAMS_PATH))
+    else:
+        for param in model.parameters():
+            nn.init.zeros_(param)
+            print('Warning: Params not exist.')
+    model.to(device)
+    model.eval()
 
     # 载入数据集
     num_times = 3
     for X, Y in data_iter_order(batch_size):
         num_times -= 1
-        X_test = X.copyto(devices[0])
-        Y_test = Y.copyto(devices[0])
+        X_test = X.to(device)
+        Y_test = Y.to(device)
         if num_times == 0:
             break
 
     # predict
     LON, LATI, HEI = [], [], []
-    state = model.begin_state(1, devices[:1])[0]
+    state = None
     for i in range(X_test.shape[0]):
         y, state = model(X_test[i].reshape(1, 6, 6), state)
-        # TI.append(y[0][0].asscalar())
-        LON.append(y[0][1].asscalar() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0])
-        LATI.append(y[0][2].asscalar() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0])
-        HEI.append(y[0][3].asscalar() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0])
+        # TI.append(y[0][0].item())
+        LON.append(y[0][1].item() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0])
+        LATI.append(y[0][2].item() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0])
+        HEI.append(y[0][3].item() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0])
 
     predicts = [
         np.array(LON),
@@ -80,9 +86,9 @@ if __name__ == '__main__':
         np.array(HEI)
     ]
     sources = [
-        Y_test[:, 1].asnumpy() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0],
-        Y_test[:, 2].asnumpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
-        Y_test[:, 3].asnumpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0]
+        Y_test[:, 1].cpu().numpy() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0],
+        Y_test[:, 2].cpu().numpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
+        Y_test[:, 3].cpu().numpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0]
     ]
 
     # c = len(sources[0]) // 3
@@ -93,4 +99,4 @@ if __name__ == '__main__':
     # predicts[1] += b2
     # predicts[2] += b3
 
-    show_3D(sources, predicts, 100)
+    save_2D(sources, predicts, 100)
