@@ -51,7 +51,7 @@ if __name__ == '__main__':
                     y, states[i] = model(Xs, states[i])
                     l = loss(y, Ys)
                     losses.append(l)
-            autograd.backward(losses)
+                autograd.backward(losses)
             optimizer.step(batch_size)
             l_sum += sum([l.sum().asscalar() for l in losses])
             n += batch_size
