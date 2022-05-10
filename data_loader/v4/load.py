@@ -46,6 +46,9 @@ def data_iter_order(batch_size, ctx=None):
 
 
 def data_iter_pre(batch_size):
+    data_dir = DATA_AFTER_DIR + '-' + str(batch_size)
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
     idx = 1
     X = []
     Y = []
@@ -60,9 +63,9 @@ def data_iter_pre(batch_size):
                 label = df.loc[jx+6, LABEL_COLUMNS]
                 X.append(feature.to_numpy().tolist())
                 Y.append(label.to_numpy().tolist())
-            with open(os.path.join(DATA_AFTER_DIR, 'f' + str(1000000000000 + idx) + '.pt'), 'wb') as f:
+            with open(os.path.join(data_dir, 'f' + str(1000000000000 + idx) + '.pt'), 'wb') as f:
                 pickle.dump(X, f)
-            with open(os.path.join(DATA_AFTER_DIR, 'l' + str(1000000000000 + idx) + '.pt'), 'wb') as f:
+            with open(os.path.join(data_dir, 'l' + str(1000000000000 + idx) + '.pt'), 'wb') as f:
                 pickle.dump(Y, f)
             X.clear()
             Y.clear()
@@ -70,11 +73,12 @@ def data_iter_pre(batch_size):
             idx += 1
 
 
-def data_iter_load(ctx=None):
-    for pp in os.listdir(DATA_AFTER_DIR):
-        px = os.path.join(DATA_AFTER_DIR, pp)
+def data_iter_load(batch_size, ctx=None):
+    data_dir = DATA_AFTER_DIR + '-' + str(batch_size)
+    for pp in os.listdir(data_dir):
+        px = os.path.join(data_dir, pp)
         if pp.startswith('f'):
-            py = os.path.join(DATA_AFTER_DIR, 'l' + pp[1:])
+            py = os.path.join(data_dir, 'l' + pp[1:])
             with open(px, 'rb') as f:
                 X = nd.array(pickle.load(f), ctx=ctx)
             with open(py, 'rb') as f:

@@ -1,7 +1,6 @@
 import os
 from time import time
 from mxnet import autograd, init, gpu, cpu
-from mxnet.optimizer import SGD
 from mxnet.gluon import Trainer
 from mxnet.gluon.utils import split_and_load
 from mxnet.util import get_gpu_count
@@ -22,15 +21,14 @@ if __name__ == '__main__':
         model.load_parameters(PARAMS_PATH, ctx=devices)
         print('Warning: Using the existing params to train.')
     else:
-        model.initialize(init=init.Zero(), ctx=devices)
+        model.initialize(init=init.Normal(0.01), ctx=devices)
     states = model.begin_state(batch_size, devices)
 
-    # print(model.collect_params())
-    optimizer = Trainer(model.collect_params(), SGD())
+    optimizer = Trainer(model.collect_params(), 'sgd', {'learning_rate': lr})
 
     # 载入训练数据集
     datasets = []
-    for X, Y in data_iter_load():
+    for X, Y in data_iter_load(batch_size):
         X_list = split_and_load(X, devices, batch_axis=0, even_split=True)
         Y_list = split_and_load(Y, devices, batch_axis=0, even_split=True)
         datasets.append((X_list, Y_list))

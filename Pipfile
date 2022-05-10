@@ -13,7 +13,6 @@ mxnet-cu102 = "*"
 mypy = "*"
 autopep8 = "*"
 ipykernel = "*"
-pyinstaller = "*"
 
 [requires]
 python_version = "3.6"
