@@ -36,7 +36,6 @@ if __name__ == '__main__':
 
         states = None
         for X, Y in data_iter_load(batch_size):
-            losses = []
             y, states = model(X, states)
             l = loss(Y, y)
 

@@ -7,13 +7,14 @@ name = "custom"
 thrift = "*"
 pandas = "*"
 matplotlib = "*"
-mxnet-cu102 = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
 
 [dev-packages]
 mypy = "*"
 autopep8 = "*"
 ipykernel = "*"
-pyinstaller = "*"
 
 [requires]
 python_version = "3.6"

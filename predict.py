@@ -99,4 +99,4 @@ if __name__ == '__main__':
     # predicts[1] += b2
     # predicts[2] += b3
 
-    save_2D(sources, predicts, 100)
+    show_2D(sources, predicts, 100)

@@ -5,7 +5,9 @@ name = "custom"
 
 [packages]
 thrift = "*"
-mxnet = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
 
 [dev-packages]
 
