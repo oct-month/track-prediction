@@ -22,7 +22,7 @@ if __name__ == '__main__':
         model.load_parameters(PARAMS_PATH, ctx=devices)
         print('Warning: Using the existing params to train.')
     else:
-        model.initialize(init=init.Normal(sigma=0.5), ctx=devices)
+        model.initialize(init=init.Zero(), ctx=devices)
     states = model.begin_state(batch_size, devices)
 
     # print(model.collect_params())
