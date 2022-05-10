@@ -22,8 +22,12 @@ if __name__ == '__main__':
         model.load_parameters(PARAMS_PATH, ctx=devices)
         print('Warning: Using the existing params to train.')
     else:
-        model.initialize(init=init.Zero(), ctx=devices)
+        model.initialize(init=init.One(), ctx=devices)
     states = model.begin_state(batch_size, devices)
+
+    # 输出模型参数
+    for k, v in model.collect_params().items():
+        print(k, v.list_data())
 
     # print(model.collect_params())
     optimizer = Trainer(model.collect_params(), SGD())
