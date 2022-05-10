@@ -45,8 +45,8 @@ if __name__ == '__main__':
         l_sum, n, start = 0.0, 0, time()
 
         for X_list, Y_list in datasets:
-            losses = []
             with autograd.record():
+                losses = []
                 for i, (Xs, Ys) in enumerate(zip(X_list, Y_list)):
                     y, states[i] = model(Xs, states[i])
                     l = loss(y, Ys)
