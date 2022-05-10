@@ -61,4 +61,8 @@ if __name__ == '__main__':
         l_test = loss(y, Y_test).sum().asscalar() / batch_size
         # 输出
         print(f'loss {l_sum / n}, time {time() - start}, n {n}, test loss {l_test}.')
+    # 保存模型
     model.save_parameters(PARAMS_PATH)
+    # 打印参数值
+    for k, v in model.collect_params().items():
+        print(k, v.list_data())
