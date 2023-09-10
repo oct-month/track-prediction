@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-from config import DATA_DIR_1 as DATA_PRE_DIR, DATA_DIR_2 as DATA_AFTER_DIR, TRACK_MIN_POINT_NUM, FEATURES_COLUMNS
+from config import DATA_DIR_1 as DATA_PRE_DIR, DATA_DIR_2 as DATA_AFTER_DIR, TRACK_MIN_POINT_NUM, FEATURES_COLUMNS, BASE_LATITUDE, BASE_LONGITUDE, PER_LATITUDE_M, PER_LONGITUDE_M
 
 
 def convert_empty_str(value: pd.Series, **extra):
@@ -18,6 +18,12 @@ def get_latitude(value: str, **extra):
     if value is None or value is pd.NA or value.strip() == '':
         return pd.NA
     return float(value.split(',')[1])
+
+def longitude_tom(value: float, **extra):
+    return (value - BASE_LONGITUDE) * PER_LONGITUDE_M
+
+def latitude_tom(value: float, **extra):
+    return (value - BASE_LATITUDE) * PER_LATITUDE_M
 
 
 def main():
@@ -67,9 +73,12 @@ def main():
             dt.drop_duplicates(subset=FEATURES_COLUMNS[1:3], keep='first', inplace=True)
             # 丢弃离谱数据
             # TODO
+            # 经纬度转米
+            dt['经度'] = dt.loc[:, '经度'].apply(longitude_tom)
+            dt['纬度'] = dt.loc[:, '纬度'].apply(latitude_tom)
             # 丢弃平飞数据和过短数据
             # 保存csv
-            if dt.shape[0] >= TRACK_MIN_POINT_NUM and abs(dt['高度'][-1] - dt['高度'][0]) >= 500:
+            if dt.shape[0] >= TRACK_MIN_POINT_NUM: # and abs(dt['高度'][-1] - dt['高度'][0]) >= 500:
                 file_name = os.path.join(DATA_AFTER_DIR, pn + '-' + str(idx) + '.csv')
                 dt.to_csv(file_name, index=True, encoding='UTF-8')
     print('data pre icao done.')

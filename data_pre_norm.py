@@ -32,6 +32,10 @@ def main():
     for pp in os.listdir(DATA_PRE_DIR):
         p = os.path.join(DATA_PRE_DIR, pp)
         df = pd.read_csv(p, sep=',')
+        # print
+        print(f"最小经度：{df.loc[:, '经度'].min()}，最大经度：{df.loc[:, '经度'].max()}")
+        print(f"最小纬度：{df.loc[:, '纬度'].min()}，最大纬度：{df.loc[:, '纬度'].max()}")
+        return
         # 时间处理
         df['时间'] = df.loc[:, '时间'].apply(pd.to_datetime, errors='raise', format='%Y-%m-%d %H:%M:%S.%f')
         df['时间'] = df.loc[:, '时间'].apply(convert_datetime_numric)

@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>两点间距离</title>
+     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <style>
+        html,body,#container{
+            height:100%;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<div class='info' style='min-width:15rem;'>可拖动Marker调整位置</div>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=您申请的key值"></script>
+<script type="text/javascript">
+       //初始化地图对象，加载地图
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        zoom: 13
+    });
+    // 0 0
+    var m01 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position: new AMap.LngLat(0, 34.31290054)
+    });
+    var m02 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position: new AMap.LngLat(108.49861908, 0)
+    });
+    // 左下
+    var m1 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position: new AMap.LngLat(108.49861908, 34.31290054)
+    });
+    // 右上
+    var m2 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position:new AMap.LngLat(112.95783997, 38.0145607)
+    });
+    // 左上
+    var m3 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position: new AMap.LngLat(108.49861908, 38.0145607)
+    });
+    // 右下
+    var m4 = new AMap.Marker({
+        map: map,
+        draggable:true,
+        position: new AMap.LngLat(112.95783997, 34.31290054)
+    });
+    map.setFitView();
+    
+    var line1 = new AMap.Polyline({
+      	strokeColor:'#80d8ff',
+      	isOutline:true,
+      	outlineColor:'white'
+    });
+    line1.setMap(map);
+    var text1 = new AMap.Text({
+      	text:'',
+      	style:{'background-color':'#29b6f6',
+				'border-color':'#e1f5fe',
+				'font-size':'12px'}
+    });
+    text1.setMap(map)
+    function computeDis1(){
+        var p1 = m1.getPosition();
+        var p2 = m2.getPosition();
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var distance = p1.distance(p2);
+        var path = [p1,p2];
+        line1.setPath(path);
+        text1.setText(''+distance+'米')
+        text1.setPosition(textPos)
+    }
+    computeDis1();
+    m1.on('dragging', computeDis1)
+    m2.on('dragging', computeDis1)
+
+    var line2 = new AMap.Polyline({
+      	strokeColor:'#80d8ff',
+      	isOutline:true,
+      	outlineColor:'white'
+    });
+    line2.setMap(map);
+    var text2 = new AMap.Text({
+      	text:'',
+      	style:{'background-color':'#29b6f6',
+				'border-color':'#e1f5fe',
+				'font-size':'12px'}
+    });
+    text2.setMap(map)
+    function computeDis2(){
+        var p1 = m1.getPosition();
+        var p2 = m4.getPosition();
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var distance = p1.distance(p2);
+        var path = [p1,p2];
+        line2.setPath(path);
+        text2.setText('' + distance / (112.95783997 - 108.49861908))
+        text2.setPosition(textPos)
+    }
+    computeDis2();
+    m1.on('dragging', computeDis2)
+    m4.on('dragging', computeDis2)
+
+    var line3 = new AMap.Polyline({
+      	strokeColor:'#80d8ff',
+      	isOutline:true,
+      	outlineColor:'white'
+    });
+    line3.setMap(map);
+    var text3 = new AMap.Text({
+      	text:'',
+      	style:{'background-color':'#29b6f6',
+				'border-color':'#e1f5fe',
+				'font-size':'12px'}
+    });
+    text3.setMap(map)
+    function computeDis3(){
+        var p1 = m3.getPosition();
+        var p2 = m2.getPosition();
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var distance = p1.distance(p2);
+        var path = [p1,p2];
+        line3.setPath(path);
+        text3.setText('' + distance / (112.95783997 - 108.49861908))
+        text3.setPosition(textPos)
+    }
+    computeDis3();
+    m3.on('dragging', computeDis3)
+    m2.on('dragging', computeDis3)
+
+    var line4 = new AMap.Polyline({
+      	strokeColor:'#80d8ff',
+      	isOutline:true,
+      	outlineColor:'white'
+    });
+    line4.setMap(map);
+    var text4 = new AMap.Text({
+      	text:'',
+      	style:{'background-color':'#29b6f6',
+				'border-color':'#e1f5fe',
+				'font-size':'12px'}
+    });
+    text4.setMap(map)
+    function computeDis4(){
+        var p1 = m1.getPosition();
+        var p2 = m3.getPosition();
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var distance = p1.distance(p2);
+        var path = [p1,p2];
+        line4.setPath(path);
+        text4.setText('' + distance / (38.0145607 - 34.31290054))
+        text4.setPosition(textPos)
+    }
+    computeDis4();
+    m1.on('dragging', computeDis4)
+    m3.on('dragging', computeDis4)
+
+    var line5 = new AMap.Polyline({
+      	strokeColor:'#80d8ff',
+      	isOutline:true,
+      	outlineColor:'white'
+    });
+    line5.setMap(map);
+    var text5 = new AMap.Text({
+      	text:'',
+      	style:{'background-color':'#29b6f6',
+				'border-color':'#e1f5fe',
+				'font-size':'12px'}
+    });
+    text5.setMap(map)
+    function computeDis5(){
+        var p1 = m4.getPosition();
+        var p2 = m2.getPosition();
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var distance = p1.distance(p2);
+        var path = [p1,p2];
+        line5.setPath(path);
+        text5.setText('' + distance / (38.0145607 - 34.31290054))
+        text5.setPosition(textPos)
+    }
+    computeDis5();
+    m4.on('dragging', computeDis5)
+    m2.on('dragging', computeDis5)
+
+    var line6 = new AMap.Polyline({
+      	strokeColor:'#80d8ff',
+      	isOutline:true,
+      	outlineColor:'white'
+    });
+    line6.setMap(map);
+    var text6 = new AMap.Text({
+      	text:'',
+      	style:{'background-color':'#29b6f6',
+				'border-color':'#e1f5fe',
+				'font-size':'12px'}
+    });
+    text6.setMap(map)
+    function computeDis6(){
+        var p1 = m01.getPosition();
+        var p2 = m1.getPosition();
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var distance = p1.distance(p2);
+        var path = [p1,p2];
+        line6.setPath(path);
+        text6.setText('' + distance + "米")
+        text6.setPosition(textPos)
+    }
+    computeDis6();
+    m01.on('dragging', computeDis6)
+    m1.on('dragging', computeDis6)
+
+    var line7 = new AMap.Polyline({
+      	strokeColor:'#80d8ff',
+      	isOutline:true,
+      	outlineColor:'white'
+    });
+    line7.setMap(map);
+    var text7 = new AMap.Text({
+      	text:'',
+      	style:{'background-color':'#29b6f6',
+				'border-color':'#e1f5fe',
+				'font-size':'12px'}
+    });
+    text7.setMap(map)
+    function computeDis7(){
+        var p1 = m02.getPosition();
+        var p2 = m1.getPosition();
+        var textPos = p1.divideBy(2).add(p2.divideBy(2));
+        var distance = p1.distance(p2);
+        var path = [p1,p2];
+        line7.setPath(path);
+        text7.setText('' + distance + "米")
+        text7.setPosition(textPos)
+    }
+    computeDis7();
+    m02.on('dragging', computeDis7)
+    m1.on('dragging', computeDis7)
+</script>
+</body>
+</html>

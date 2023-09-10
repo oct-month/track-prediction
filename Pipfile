@@ -4,7 +4,6 @@ verify_ssl = true
 name = "custom"
 
 [packages]
-thrift = "*"
 pandas = "*"
 matplotlib = "*"
 torch = "*"
@@ -14,7 +13,6 @@ torchaudio = "*"
 [dev-packages]
 mypy = "*"
 autopep8 = "*"
-ipykernel = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.10"
