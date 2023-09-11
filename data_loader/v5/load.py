@@ -1,9 +1,10 @@
 import os
+import shutil
 import pickle
 import pandas as pd
 import torch
 
-from config import DATA_DIR_3 as DATA_PRE_DIR, DATA_DIR_4 as DATA_AFTER_DIR, FEATURES_COLUMNS, LABEL_COLUMNS
+from config import DATA_DIR_2 as DATA_PRE_DIR, DATA_DIR_4 as DATA_AFTER_DIR, FEATURES_COLUMNS, LABEL_COLUMNS
 
 DATA_DIR = DATA_PRE_DIR
 BASE_INDEX_FILE = 1000000000000
@@ -48,9 +49,10 @@ def data_iter_order(batch_size):
 
 def data_iter_pre(batch_size):
     data_dir = DATA_AFTER_DIR + '-' + str(batch_size)
-    if not os.path.exists(data_dir):
-        os.mkdir(data_dir)
-    idx = 1
+    if os.path.exists(data_dir):
+        shutil.rmtree(data_dir)
+    os.mkdir(data_dir)
+    idx = 0
     X = []
     Y = []
     for pp in os.listdir(DATA_PRE_DIR):
@@ -70,8 +72,8 @@ def data_iter_pre(batch_size):
                 pickle.dump(Y, f)
             X.clear()
             Y.clear()
-            print(idx, end=' ')
             idx += 1
+        print(idx, end=' ')
 
 
 def data_iter_load(batch_size):

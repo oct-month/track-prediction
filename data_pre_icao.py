@@ -1,5 +1,7 @@
+from datetime import datetime
 import pandas as pd
 import os
+import shutil
 
 from config import DATA_DIR_1 as DATA_PRE_DIR, DATA_DIR_2 as DATA_AFTER_DIR, TRACK_MIN_POINT_NUM, FEATURES_COLUMNS, BASE_LATITUDE, BASE_LONGITUDE, PER_LATITUDE_M, PER_LONGITUDE_M
 
@@ -20,13 +22,19 @@ def get_latitude(value: str, **extra):
     return float(value.split(',')[1])
 
 def longitude_tom(value: float, **extra):
-    return (value - BASE_LONGITUDE) * PER_LONGITUDE_M
+    return (value - BASE_LONGITUDE) * PER_LONGITUDE_M - 70000
 
 def latitude_tom(value: float, **extra):
-    return (value - BASE_LATITUDE) * PER_LATITUDE_M
+    return (value - BASE_LATITUDE) * PER_LATITUDE_M - 70000
 
+def convert_datetime_numric(value: datetime, **extra):
+    return value.timestamp() - datetime(2020, 3, 31, 16, 45).timestamp()
 
 def main():
+    if os.path.exists(DATA_AFTER_DIR):
+        shutil.rmtree(DATA_AFTER_DIR)
+    os.mkdir(DATA_AFTER_DIR)
+
     for idx, pp in enumerate(os.listdir(DATA_PRE_DIR)):
         p = os.path.join(DATA_PRE_DIR, pp)
         df: pd.DataFrame = pd.read_table(p, sep='\t', encoding='UTF-8')
@@ -65,6 +73,7 @@ def main():
             # dt['航班号'] = dt.loc[:, '航班号'].astype(str)
             dt['时间'] = dt.loc[:, '时间'].apply(pd.to_datetime, errors='raise', format='%Y-%m-%d %H:%M:%S.%f')
             dt.drop_duplicates(subset=['时间'], keep='last', inplace=True)
+            dt['时间'] = dt.loc[:, '时间'].apply(convert_datetime_numric)
             dt.set_index('时间', inplace=True)
             dt[['经度', '纬度', '速度', '高度', '航向']] = dt.loc[:, ['经度', '纬度', '速度', '高度', '航向']].apply(pd.to_numeric, errors='coerce')
             # 丢弃无用数据

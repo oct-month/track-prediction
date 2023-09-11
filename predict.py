@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from model import HybridCNNLSTM
 from data_loader import data_iter_order
-from config import LABEL_NORMALIZATION, NORMALIZATION_TIMES, PARAMS_PATH, batch_size
+from config import PARAMS_PATH, batch_size
 
 
 plt.rcParams['font.sans-serif']=['SimHei']      #用来正常显示中文标签
@@ -55,14 +55,14 @@ if __name__ == '__main__':
     if os.path.isfile(PARAMS_PATH):
         model.load_state_dict(torch.load(PARAMS_PATH))
     else:
+        print('Warning: Params not exist.')
         for param in model.parameters():
             nn.init.zeros_(param)
-            print('Warning: Params not exist.')
     model.to(device)
     model.eval()
 
     # 载入数据集
-    num_times = 3
+    num_times = 1
     for X, Y in data_iter_order(batch_size):
         num_times -= 1
         X_test = X.to(device)
@@ -76,9 +76,9 @@ if __name__ == '__main__':
     for i in range(X_test.shape[0]):
         y, state = model(X_test[i].reshape(1, 6, 6), state)
         # TI.append(y[0][0].item())
-        LON.append(y[0][1].item() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0])
-        LATI.append(y[0][2].item() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0])
-        HEI.append(y[0][3].item() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0])
+        LON.append(y[0][1].item())
+        LATI.append(y[0][2].item())
+        HEI.append(y[0][3].item())
 
     predicts = [
         np.array(LON),
@@ -86,9 +86,9 @@ if __name__ == '__main__':
         np.array(HEI)
     ]
     sources = [
-        Y_test[:, 1].cpu().numpy() * (LABEL_NORMALIZATION[1][1] - LABEL_NORMALIZATION[1][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[1][0],
-        Y_test[:, 2].cpu().numpy() * (LABEL_NORMALIZATION[2][1] - LABEL_NORMALIZATION[2][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[2][0],
-        Y_test[:, 3].cpu().numpy() * (LABEL_NORMALIZATION[3][1] - LABEL_NORMALIZATION[3][0]) / NORMALIZATION_TIMES + LABEL_NORMALIZATION[3][0]
+        Y_test[:, 1].cpu().numpy(),
+        Y_test[:, 2].cpu().numpy(),
+        Y_test[:, 3].cpu().numpy()
     ]
 
     # c = len(sources[0]) // 3

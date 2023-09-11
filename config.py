@@ -35,8 +35,8 @@ BASE_LATITUDE = 34
 # 基准经度
 BASE_LONGITUDE = 108
 
-batch_size = 120
+batch_size = 256
 num_epochs = 5
-lr = 0.001
+lr = 0.1
 
 PARAMS_PATH = './params-hybrid.pt'
