@@ -32,8 +32,6 @@ def show_2D(sources, steps=0):
     plt.legend()
     plt.show()
 
-def sub_100000(value: float, **extra):
-    return value - 70000
 
 # batch channel sequeu
 if __name__ == '__main__':
@@ -44,8 +42,8 @@ if __name__ == '__main__':
         df = pd.read_csv(p, sep=',')
 
         sources = [
-            df.loc[3200:, '经度'].apply(sub_100000).to_numpy(),
-            df.loc[3200:, '纬度'].apply(sub_100000).to_numpy(),
+            df.loc[3200:, '经度'].to_numpy(),
+            df.loc[3200:, '纬度'].to_numpy(),
             df.loc[3200:, '高度'].to_numpy()
         ]
         show_3D(sources, 200)

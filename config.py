@@ -26,6 +26,8 @@ LABEL_NORMALIZATION = [
 ]
 NORMALIZATION_TIMES = 100
 
+# LSTM seq_length
+SEQ_LENGTH = 6
 # 每纬度大约多少m
 PER_LATITUDE_M = 111319.48598161776
 # 每经度大约多少m
@@ -37,6 +39,6 @@ BASE_LONGITUDE = 108
 
 batch_size = 256
 num_epochs = 5
-lr = 0.1
+lr = 0.01
 
 PARAMS_PATH = './params-hybrid.pt'

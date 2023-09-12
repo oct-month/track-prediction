@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from model import HybridCNNLSTM
-from data_loader import data_iter_order
-from config import PARAMS_PATH, batch_size
+from data_loader import data_X_Y
+from config import DATA_DIR_2 as DATA_AFTER_DIR, PARAMS_PATH, batch_size
 
 
 plt.rcParams['font.sans-serif']=['SimHei']      #用来正常显示中文标签
@@ -14,26 +14,26 @@ plt.rcParams['axes.unicode_minus']=False        #用来正常显示负号
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def show_3D(sources, predicts, steps=0):
+def show_3D(sources, predicts, steps=1):
     plt.figure()
     ax = plt.axes(projection='3d')
     ax.set_xlabel('lontitude')
     ax.set_ylabel('latitude')
     ax.set_zlabel('height')
-    ax.scatter3D(predicts[0][steps:], predicts[1][steps:], predicts[2][steps:], c='blue')
-    ax.scatter3D(sources[0][steps:], sources[1][steps:], sources[2][steps:], c='red')
+    ax.plot3D(predicts[0][::steps], predicts[1][::steps], predicts[2][::steps], c='blue')
+    ax.plot3D(sources[0][::steps], sources[1][::steps], sources[2][::steps], c='red')
     plt.show()
 
 
-def show_2D(sources, predicts, steps=0):
+def show_2D(sources, predicts, steps=1):
     plt.figure()
     ax = plt.axes()
     ax.set_xlabel('lontitude')
     ax.set_ylabel('latitude')
-    plt.plot(predicts[0][steps:], predicts[1][steps:], c='blue', label='预测')
-    plt.scatter(predicts[0][-1:], predicts[1][-1:], c='black')
-    plt.plot(sources[0][steps:], sources[1][steps:], c='red', label='真实')
-    plt.scatter(sources[0][-1:], sources[1][-1:], c='black')
+    plt.plot(predicts[0][::steps], predicts[1][::steps], c='blue', label='预测')
+    # plt.scatter(predicts[0][-1:], predicts[1][-1:], c='black')
+    plt.plot(sources[0][::steps], sources[1][::steps], c='red', label='真实')
+    # plt.scatter(sources[0][-1:], sources[1][-1:], c='black')
     plt.legend()
     plt.show()
 
@@ -60,14 +60,21 @@ if __name__ == '__main__':
             nn.init.zeros_(param)
     model.to(device)
     model.eval()
-
+    
     # 载入数据集
     num_times = 1
-    for X, Y in data_iter_order(batch_size):
+    for pp in os.listdir(DATA_AFTER_DIR):
+        p = os.path.join(DATA_AFTER_DIR, pp)
+        X_test, Y_test = data_X_Y(p, 3200)
+
+        # sources = [
+        #     df.loc[3200:, '经度'].to_numpy(),
+        #     df.loc[3200:, '纬度'].to_numpy(),
+        #     df.loc[3200:, '高度'].to_numpy()
+        # ]
+
         num_times -= 1
-        X_test = X.to(device)
-        Y_test = Y.to(device)
-        if num_times == 0:
+        if num_times <= 0:
             break
 
     # predict
@@ -99,4 +106,4 @@ if __name__ == '__main__':
     # predicts[1] += b2
     # predicts[2] += b3
 
-    show_2D(sources, predicts, 100)
+    show_3D(sources, predicts, 200)

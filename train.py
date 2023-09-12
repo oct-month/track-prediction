@@ -29,10 +29,10 @@ if __name__ == '__main__':
     model.train()
 
     # 输出模型参数
-    print('****** ↓ Model Parameters ↓ ******')
-    for k, v in model.named_parameters():
-        print(k, v.data)
-    print('****** ↑ Model Parameters ↑ ******')
+    # print('****** ↓ Model Parameters ↓ ******')
+    # for k, v in model.named_parameters():
+    #     print(k, v.data)
+    # print('****** ↑ Model Parameters ↑ ******')
 
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
@@ -51,10 +51,10 @@ if __name__ == '__main__':
             l.backward()
             # 输出梯度
             if grad_flag:
-                print('****** ↓ Parameters\' grad ↓ ******')
-                for k, v in model.named_parameters():
-                    print(k, v.grad)
-                print('****** ↑ Parameters\' grad ↑ ******')
+                # print('****** ↓ Parameters\' grad ↓ ******')
+                # for k, v in model.named_parameters():
+                #     print(k, v.grad)
+                # print('****** ↑ Parameters\' grad ↑ ******')
                 grad_flag = False
             for state in states:
                 state.detach_()
@@ -65,10 +65,10 @@ if __name__ == '__main__':
         print(f'loss {l_sum / n}, time {time() - start}, n {n}.')
     
     # 输出模型参数
-    print('****** ↓ Model Parameters ↓ ******')
-    for k, v in model.named_parameters():
-        print(k, v.data)
-    print('****** ↑ Model Parameters ↑ ******')
+    # print('****** ↓ Model Parameters ↓ ******')
+    # for k, v in model.named_parameters():
+    #     print(k, v.data)
+    # print('****** ↑ Model Parameters ↑ ******')
     # 保存模型
     torch.save(model.cpu().state_dict(), PARAMS_PATH)
     # 打印参数值
