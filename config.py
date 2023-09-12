@@ -39,6 +39,6 @@ BASE_LONGITUDE = 108
 
 batch_size = 256
 num_epochs = 5
-lr = 0.01
+lr = 1000
 
 PARAMS_PATH = './params-hybrid.pt'

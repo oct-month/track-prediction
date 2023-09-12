@@ -56,7 +56,7 @@ class HybridCNNLSTM(nn.Module):
             # Hard-Attention 机制
             score = (Xl * state[0].sum(0, keepdim=True).transpose(0, 1)).sum(2)
             indices = score.argmax(1)
-            Xl_p = torch.gather(Xl, 1, indices.unsqueeze(1).unsqueeze(2).expand(-1, -1, Xl.size(2)))
+            Xl_p = torch.gather(Xl, 1, indices.unsqueeze(1).unsqueeze(2).expand(-1, -1, Xl.size(2))).squeeze(0)
         # 全连接层
         return self.linear_net(Xl_p), state
 
